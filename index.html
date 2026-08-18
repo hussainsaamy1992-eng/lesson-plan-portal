@@ -113,23 +113,59 @@
             width: 100%;
         }
 
-        /* Right Side: Outcomes Numbers Grid & Preview */
+        /* Right Side: Outcomes Container */
         .outcomes-container {
             flex: 1;
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
-            max-height: 80vh;
-            overflow-y: auto;
+            height: 85vh; /* Fixed height so the container stays still */
             display: flex;
             flex-direction: column;
         }
+
+        /* NEW PREVIEW BOX (LOCKED AT THE TOP) */
+        .preview-box {
+            background-color: white;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 80px;
+            max-height: 120px; /* Prevents it from taking over the screen */
+            overflow-y: auto;  /* Adds a small scrollbar just for the text if it is huge */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            flex-shrink: 0; /* Keeps the box size stable */
+        }
+        .preview-title {
+            font-size: 12px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 8px;
+            direction: ltr;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        #preview-content {
+            font-size: 14px;
+            line-height: 1.6;
+            direction: rtl;
+            text-align: right;
+            color: #888;
+        }
         
+        /* SCROLLING AREA FOR THE NUMBERS ONLY */
+        .grid-scroll-area {
+            overflow-y: auto; /* Only this section scrolls now */
+            flex-grow: 1;
+            padding-right: 5px;
+        }
+
         .numbers-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr); 
             gap: 8px;
-            margin-bottom: 20px;
         }
         
         .number-item {
@@ -163,33 +199,6 @@
             font-weight: normal;
             margin-top: 4px;
             display: block;
-        }
-
-        /* NEW PREVIEW BOX */
-        .preview-box {
-            background-color: white;
-            border: 2px solid #3498db;
-            border-radius: 8px;
-            padding: 15px;
-            min-height: 80px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        .preview-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #666;
-            margin-bottom: 8px;
-            direction: ltr;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-        }
-        #preview-content {
-            font-size: 14px;
-            line-height: 1.6;
-            direction: rtl;
-            text-align: right;
-            color: #888;
         }
     </style>
 </head>
@@ -253,16 +262,21 @@
                     <div id="term2-weeks"></div>
                 </div>
 
-                <!-- Column 3: Outcomes Grid & PREVIEW BOX -->
+                <!-- Column 3: Outcomes Container -->
                 <div class="outcomes-container">
                     <h3 dir="rtl">Outcomes</h3>
-                    <div id="outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
-                    <div class="numbers-grid" id="outcomes-grid"></div>
                     
-                    <!-- NEW: Preview Box -->
+                    <!-- THE PREVIEW BOX IS NOW LOCKED AT THE TOP -->
                     <div class="preview-box">
                         <div class="preview-title">Full Outcome Preview</div>
                         <div id="preview-content">Hover over a number or select a dropdown to read the full text here...</div>
+                    </div>
+
+                    <div id="outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
+                    
+                    <!-- ONLY THE NUMBERS GRID SCROLLS NOW -->
+                    <div class="grid-scroll-area">
+                        <div class="numbers-grid" id="outcomes-grid"></div>
                     </div>
                 </div>
                 
@@ -291,7 +305,7 @@
         }
         updateHeader();
 
-        // 2. Generate the 25 Weeks (Passes 'this' to updateTags)
+        // 2. Generate the 25 Weeks 
         function generateWeekRows() {
             const t1Container = document.getElementById('term1-weeks');
             const t2Container = document.getElementById('term2-weeks');
@@ -334,7 +348,7 @@
                     const allDropdowns = document.querySelectorAll('.outcome-dropdown');
                     
                     if (data.success) {
-                        globalOutcomes = data.outcomes; // Save to global variable
+                        globalOutcomes = data.outcomes; 
                         
                         data.outcomes.forEach((outcome, index) => {
                             // Add Number Box to Grid
@@ -342,13 +356,12 @@
                             numBox.className = 'number-item';
                             numBox.id = `num-item-${index}`;
                             
-                            // Make hovering over the number update the preview box
                             numBox.onmouseover = function() { showPreview(index); };
                             
                             numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="tag-container-${index}"></div>`;
                             gridElement.appendChild(numBox);
 
-                            // TRUNCATE TEXT FOR DROPDOWN TO KEEP IT NEAT
+                            // Add truncated text to dropdowns
                             allDropdowns.forEach(dropdown => {
                                 let option = document.createElement('option');
                                 option.value = index; 
@@ -370,18 +383,16 @@
         // 5. Preview Display Function
         function showPreview(index) {
             const previewBox = document.getElementById('preview-content');
-            previewBox.style.color = '#000'; // Make text dark
+            previewBox.style.color = '#000'; 
             previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index]}`;
         }
 
         // 6. Update Red Tags Logic
         function updateTags(changedDropdown) {
-            // Update the preview box to show what you just selected
             if (changedDropdown && changedDropdown.value !== "") {
                 showPreview(changedDropdown.value);
             }
 
-            // Clear old tags
             document.querySelectorAll('.number-item').forEach(item => {
                 item.classList.remove('selected');
             });
@@ -389,7 +400,6 @@
                 container.innerHTML = '';
             });
 
-            // Re-apply red tags based on selected dropdowns
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
