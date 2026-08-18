@@ -29,7 +29,7 @@
             margin-bottom: 30px;
         }
         .school-header img {
-            width: 80px; /* Adjust size if needed */
+            width: 80px; 
             margin-bottom: 10px;
         }
         .school-header h1 {
@@ -139,9 +139,44 @@
         // Run once on load to set the initial header
         updateHeader();
 
-        // The Generate Function (Backend link coming next)
+        // Connect to Google Apps Script Backend
         function generateLessonPlan() {
-            document.getElementById('status').innerText = "Connecting to Google Drive... (Backend not linked yet)";
+            const btn = document.getElementById('generateBtn');
+            const statusDiv = document.getElementById('status');
+            
+            // Disable button so user doesn't click twice
+            btn.disabled = true;
+            btn.innerText = "Generating PDF... Please wait (this takes about 10 seconds)";
+            statusDiv.innerHTML = "";
+
+            // Get values from dropdowns
+            const year = document.getElementById('year').value;
+            const term = document.getElementById('term').value;
+            const week = document.getElementById('week').value;
+
+            // YOUR GOOGLE WEB APP URL
+            const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbxJCuD_v6NuQaYLNW7rsnIwNy2zMmrgactWFH98duCcraoc0GCKwTE4F__JlB13UIytHQ/exec';
+            
+            // Create the exact link to trigger the script
+            const requestUrl = `${googleAppScriptUrl}?year=${encodeURIComponent(year)}&term=${encodeURIComponent(term)}&week=${encodeURIComponent(week)}`;
+
+            // Call the Google script
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusDiv.innerHTML = `Success! <br><br> <a href="${data.url}" target="_blank" style="color: #d9534f; font-size: 18px;">Click here to download your PDF</a>`;
+                    } else {
+                        statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`;
+                    }
+                    btn.disabled = false;
+                    btn.innerText = "Generate Lesson Plan";
+                })
+                .catch(error => {
+                    statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server. Try again.</span>`;
+                    btn.disabled = false;
+                    btn.innerText = "Generate Lesson Plan";
+                });
         }
     </script>
 </body>
