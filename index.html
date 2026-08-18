@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="dv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Plan Portal</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .portal-container {
+            background: white;
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        /* Header styling to match your image */
+        .school-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .school-header img {
+            width: 80px; /* Adjust size if needed */
+            margin-bottom: 10px;
+        }
+        .school-header h1 {
+            font-size: 28px;
+            margin: 5px 0;
+            color: #000;
+        }
+        .school-header h2 {
+            font-size: 20px;
+            margin: 5px 0;
+            color: #000;
+        }
+        /* Form styling */
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            text-align: right; 
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+            text-align: right; 
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 30px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #status {
+            margin-top: 20px;
+            text-align: center;
+            font-weight: bold;
+            color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="portal-container" dir="rtl">
+        <!-- This section mimics your physical header -->
+        <div class="school-header">
+            <img src="School Bedge-01.png" alt="School Badge">
+            <h1>ވިލުފުށީ ސްކޫލް</h1>
+            <h2 id="dynamic-header-text">ލެސަން ޕްލޭން</h2>
+        </div>
+
+        <!-- Portal Controls -->
+        <label>އަހަރު (Year)</label>
+        <select id="year" onchange="updateHeader()"></select>
+
+        <label>ޓާމް (Term)</label>
+        <select id="term" onchange="updateHeader()">
+            <option value="ފުރަތަމަ ޓާރމް">ފުރަތަމަ ޓާރމް</option>
+            <option value="ދެވަނަ ޓާރމް">ދެވަނަ ޓާރމް</option>
+        </select>
+
+        <label>ހަފްތާ (Week)</label>
+        <select id="week">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+        </select>
+
+        <button id="generateBtn" onclick="generateLessonPlan()">Generate Lesson Plan</button>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Automatically populate the Year dropdown from 2026 to 2050
+        const yearDropdown = document.getElementById('year');
+        for (let i = 2026; i <= 2050; i++) {
+            let option = document.createElement('option');
+            option.value = i;
+            option.text = i;
+            yearDropdown.appendChild(option);
+        }
+
+        // Update the header text dynamically when Term or Year changes
+        function updateHeader() {
+            const selectedYear = document.getElementById('year').value;
+            const selectedTerm = document.getElementById('term').value;
+            document.getElementById('dynamic-header-text').innerText = `${selectedTerm} - ${selectedYear}`;
+        }
+        
+        // Run once on load to set the initial header
+        updateHeader();
+
+        // The Generate Function (Backend link coming next)
+        function generateLessonPlan() {
+            document.getElementById('status').innerText = "Connecting to Google Drive... (Backend not linked yet)";
+        }
+    </script>
+</body>
+</html>
