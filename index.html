@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"> <!-- Changed back to LTR for the main website layout -->
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
             height: 100vh;
         }
         
-        /* Left Sidebar Styling (Narrow & Blue) */
+        /* Left Sidebar Styling */
         .sidebar {
             width: 160px;
             background-color: #1e4a79; 
@@ -58,8 +58,8 @@
             box-sizing: border-box;
         }
         
-        #lesson-plan-section { max-width: 500px; } /* Keep LP narrow */
-        #sow-section { max-width: 1200px; display: none; } /* Make SOW very wide */
+        #lesson-plan-section { max-width: 500px; } 
+        #sow-section { max-width: 1200px; display: none; } 
 
         /* Header Styling */
         .school-header { text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
@@ -67,7 +67,7 @@
         .school-header h1 { font-size: 22px; margin: 5px 0; color: #000; }
         .school-header h2 { font-size: 18px; margin: 5px 0; color: #000; }
 
-        /* Forms inside Lesson Plan (Forced RTL for text) */
+        /* Forms inside Lesson Plan */
         .lp-form label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; text-align: right; }
         .lp-form select, .lp-form input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; text-align: right; direction: rtl; }
         .lp-form button { width: 100%; padding: 12px; margin-top: 25px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
@@ -83,14 +83,13 @@
             align-items: flex-start;
         }
 
-        /* 3 Equal Columns */
         .term-col, .outcomes-container {
-            flex: 1; /* Each takes exactly 1/3 of the space */
+            flex: 1; 
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
             box-sizing: border-box;
-            min-width: 0; /* Prevents flex items from overflowing */
+            min-width: 0; 
         }
         
         .term-col h3, .outcomes-container h3 { 
@@ -103,18 +102,15 @@
         
         /* Week Rows and Dropdowns */
         .week-row { display: flex; align-items: center; margin-bottom: 8px; width: 100%; }
-        .week-row label { width: 40px; font-weight: bold; font-size: 12px; color: #333; margin: 0; text-align: left; }
+        .week-row label { width: 40px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: left; }
         .week-row select { 
             flex: 1; 
-            padding: 5px; 
-            font-size: 12px; 
-            direction: rtl; /* Text inside dropdown reads RTL */
+            padding: 6px; 
+            font-size: 14px; /* Increased slightly for readability */
+            direction: rtl; 
             border: 1px solid #ccc; 
             border-radius: 4px;
             width: 100%;
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; /* Adds ... if text is too long */
         }
 
         /* Right Side: Outcomes Numbers Grid */
@@ -125,7 +121,7 @@
         
         .numbers-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 small boxes per row */
+            grid-template-columns: repeat(4, 1fr); 
             gap: 8px;
         }
         
@@ -147,7 +143,6 @@
             min-height: 45px;
         }
         
-        /* Red Styling for Selected Outcomes */
         .number-item.selected {
             background: #dc3545; 
             color: white;
@@ -302,15 +297,19 @@
                             let numBox = document.createElement('div');
                             numBox.className = 'number-item';
                             numBox.id = `num-item-${index}`;
-                            numBox.title = outcome; // Full text shows on mouse hover
+                            numBox.title = outcome; 
                             numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="tag-container-${index}"></div>`;
                             gridElement.appendChild(numBox);
 
-                            // Add truncated text to dropdowns
+                            // TRUNCATE TEXT FOR DROPDOWN SO IT DOES NOT BREAK THE BROWSER
                             allDropdowns.forEach(dropdown => {
                                 let option = document.createElement('option');
                                 option.value = index; 
-                                option.text = outcome; // CSS handles truncating it
+                                
+                                // Shorten to ~50 characters and add the Number (e.g. "1 - Text...")
+                                let shortText = outcome.length > 50 ? outcome.substring(0, 50) + "..." : outcome;
+                                option.text = `${index + 1} - ${shortText}`; 
+                                
                                 dropdown.appendChild(option);
                             });
                         });
