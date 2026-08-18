@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="dv">
+<html lang="en"> <!-- Changed back to LTR for the main website layout -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,15 +13,16 @@
             height: 100vh;
         }
         
-        /* Left Sidebar Styling (Now narrower and Blue) */
+        /* Left Sidebar Styling (Narrow & Blue) */
         .sidebar {
-            width: 150px; /* Made narrower */
-            background-color: #1e4a79; /* Nice blue color */
+            width: 160px;
+            background-color: #1e4a79; 
             color: white;
             padding: 20px 0;
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
+            border-right: 2px solid #163657;
         }
         .sidebar-box {
             padding: 12px 10px;
@@ -47,21 +48,18 @@
             align-items: flex-start;
         }
         
+        /* Containers */
         .portal-container {
             background: white;
-            max-width: 500px;
             width: 100%;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-sizing: border-box;
         }
         
-        /* Scheme of Work Container (Wide) */
-        #sow-section {
-            max-width: 98%; 
-            width: 100%;
-            display: none;
-        }
+        #lesson-plan-section { max-width: 500px; } /* Keep LP narrow */
+        #sow-section { max-width: 1200px; display: none; } /* Make SOW very wide */
 
         /* Header Styling */
         .school-header { text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
@@ -69,77 +67,79 @@
         .school-header h1 { font-size: 22px; margin: 5px 0; color: #000; }
         .school-header h2 { font-size: 18px; margin: 5px 0; color: #000; }
 
-        /* Forms inside Lesson Plan */
+        /* Forms inside Lesson Plan (Forced RTL for text) */
         .lp-form label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; text-align: right; }
-        .lp-form select, .lp-form input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; text-align: right; }
+        .lp-form select, .lp-form input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; text-align: right; direction: rtl; }
         .lp-form button { width: 100%; padding: 12px; margin-top: 25px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .lp-form button:hover { background-color: #218838; }
         #status { margin-top: 20px; text-align: center; font-weight: bold; color: #0056b3; }
 
-        /* --- SCHEME OF WORK NEW LAYOUT --- */
+        /* --- SCHEME OF WORK STRICT 3-COLUMN LAYOUT --- */
         .sow-layout {
             display: flex;
-            gap: 15px;
+            gap: 20px;
+            width: 100%;
+            justify-content: space-between;
             align-items: flex-start;
         }
 
-        /* Left Side: Term Columns (Takes up more space so text isn't squished) */
-        .terms-container {
-            flex: 3; 
-            display: flex;
-            gap: 15px;
+        /* 3 Equal Columns */
+        .term-col, .outcomes-container {
+            flex: 1; /* Each takes exactly 1/3 of the space */
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
+            box-sizing: border-box;
+            min-width: 0; /* Prevents flex items from overflowing */
         }
-        .term-col { flex: 1; }
-        .term-col h3 { text-align: center; font-size: 16px; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0; }
         
-        .week-row { display: flex; align-items: center; margin-bottom: 8px; }
-        .week-row label { width: 40px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: center; }
+        .term-col h3, .outcomes-container h3 { 
+            text-align: center; 
+            font-size: 16px; 
+            border-bottom: 2px solid #ccc; 
+            padding-bottom: 10px; 
+            margin-top: 0; 
+        }
+        
+        /* Week Rows and Dropdowns */
+        .week-row { display: flex; align-items: center; margin-bottom: 8px; width: 100%; }
+        .week-row label { width: 40px; font-weight: bold; font-size: 12px; color: #333; margin: 0; text-align: left; }
         .week-row select { 
             flex: 1; 
-            padding: 6px; 
-            font-size: 13px; 
-            direction: rtl; 
+            padding: 5px; 
+            font-size: 12px; 
+            direction: rtl; /* Text inside dropdown reads RTL */
             border: 1px solid #ccc; 
             border-radius: 4px;
+            width: 100%;
             white-space: nowrap; 
             overflow: hidden; 
-            text-overflow: ellipsis;
+            text-overflow: ellipsis; /* Adds ... if text is too long */
         }
 
-        /* Right Side: Outcomes Grid (Takes up less space) */
+        /* Right Side: Outcomes Numbers Grid */
         .outcomes-container {
-            flex: 1;
-            min-width: 200px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            max-height: 75vh;
+            max-height: 80vh;
             overflow-y: auto;
         }
-        .outcomes-container h3 { text-align: center; font-size: 16px; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0;}
         
-        /* Number Grid Layout */
         .numbers-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 columns of numbers */
+            grid-template-columns: repeat(4, 1fr); /* 4 small boxes per row */
             gap: 8px;
-            direction: ltr; /* English text direction for tags */
         }
         
         .number-item {
             background: #e9ecef;
             border: 1px solid #ced4da;
-            padding: 10px 5px;
+            padding: 8px 4px;
             border-radius: 6px;
             text-align: center;
             font-size: 16px;
             font-weight: bold;
             color: #333;
             transition: all 0.2s;
-            cursor: help; /* Shows a question mark on hover */
+            cursor: help; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -149,21 +149,20 @@
         
         /* Red Styling for Selected Outcomes */
         .number-item.selected {
-            background: #dc3545; /* Red background */
+            background: #dc3545; 
             color: white;
             border-color: #dc3545;
         }
 
-        /* The (W1,T1) Text */
         .shortcut-tag {
-            font-size: 11px;
+            font-size: 10px;
             font-weight: normal;
             margin-top: 4px;
             display: block;
         }
     </style>
 </head>
-<body dir="rtl">
+<body>
 
     <!-- LEFT SIDEBAR -->
     <div class="sidebar">
@@ -181,21 +180,24 @@
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
                 <h2 id="dynamic-header-text">ލެސަން ޕްލޭން</h2>
             </div>
-            <label>އަހަރު (Year)</label>
-            <select id="year" onchange="updateHeader()"></select>
-            <label>ޓާމް (Term)</label>
-            <select id="term" onchange="updateHeader()">
-                <option value="ފުރަތަމަ ޓާރމް">ފުރަތަމަ ޓާރމް</option>
-                <option value="ދެވަނަ ޓާރމް">ދެވަނަ ޓާރމް</option>
-            </select>
-            <label>ހަފްތާ (Week)</label>
-            <select id="week">
-                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-                <option value="7">7</option><option value="8">8</option>
-            </select>
-            <button id="generateBtn" onclick="generateLessonPlan()">Generate Lesson Plan</button>
-            <div id="status"></div>
+            
+            <div dir="rtl">
+                <label>އަހަރު (Year)</label>
+                <select id="year" onchange="updateHeader()"></select>
+                <label>ޓާމް (Term)</label>
+                <select id="term" onchange="updateHeader()">
+                    <option value="ފުރަތަމަ ޓާރމް">ފުރަތަމަ ޓާރމް</option>
+                    <option value="ދެވަނަ ޓާރމް">ދެވަނަ ޓާރމް</option>
+                </select>
+                <label>ހަފްތާ (Week)</label>
+                <select id="week">
+                    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                    <option value="7">7</option><option value="8">8</option>
+                </select>
+                <button id="generateBtn" onclick="generateLessonPlan()">Generate Lesson Plan</button>
+                <div id="status"></div>
+            </div>
         </div>
 
         <!-- SCHEME OF WORK MATRIX -->
@@ -206,25 +208,25 @@
                 <h2>Scheme of Work Matrix</h2>
             </div>
             
-            <div class="sow-layout" dir="ltr"> <!-- LTR layout to keep terms on left -->
+            <!-- Strict 3 Column Layout -->
+            <div class="sow-layout"> 
                 
-                <!-- Left Side: Terms and 25 Weeks -->
-                <div class="terms-container">
-                    <div class="term-col">
-                        <h3 dir="rtl">ފުރަތަމަ ޓާރމް (Term 1)</h3>
-                        <div id="term1-weeks"></div>
-                    </div>
-                    <div class="term-col">
-                        <h3 dir="rtl">ދެވަނަ ޓާރމް (Term 2)</h3>
-                        <div id="term2-weeks"></div>
-                    </div>
+                <!-- Column 1: Term 1 -->
+                <div class="term-col">
+                    <h3 dir="rtl">ފުރަތަމަ ޓާރމް (Term 1)</h3>
+                    <div id="term1-weeks"></div>
+                </div>
+                
+                <!-- Column 2: Term 2 -->
+                <div class="term-col">
+                    <h3 dir="rtl">ދެވަނަ ޓާރމް (Term 2)</h3>
+                    <div id="term2-weeks"></div>
                 </div>
 
-                <!-- Right Side: Outcomes Numbers Grid -->
-                <div class="outcomes-container" dir="rtl">
-                    <h3>Outcomes</h3>
+                <!-- Column 3: Outcomes Grid -->
+                <div class="outcomes-container">
+                    <h3 dir="rtl">Outcomes</h3>
                     <div id="outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
-                    <!-- Number Grid instead of a list -->
                     <div class="numbers-grid" id="outcomes-grid"></div>
                 </div>
                 
@@ -259,9 +261,8 @@
             let t1Html = ''; let t2Html = '';
             
             for (let i = 1; i <= 25; i++) {
-                // Notice the data-term is T1 and data-week is W1, etc.
-                t1Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags()"><option value="">--</option></select></div>`;
-                t2Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags()"><option value="">--</option></select></div>`;
+                t1Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags()"><option value="">-- Select --</option></select></div>`;
+                t2Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags()"><option value="">-- Select --</option></select></div>`;
             }
             t1Container.innerHTML = t1Html;
             t2Container.innerHTML = t2Html;
@@ -297,19 +298,19 @@
                     
                     if (data.success) {
                         data.outcomes.forEach((outcome, index) => {
-                            // A. Add to right-side Grid as just a number
+                            // Add Number Box to Grid
                             let numBox = document.createElement('div');
                             numBox.className = 'number-item';
                             numBox.id = `num-item-${index}`;
-                            numBox.title = outcome; // Hover to read full text!
+                            numBox.title = outcome; // Full text shows on mouse hover
                             numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="tag-container-${index}"></div>`;
                             gridElement.appendChild(numBox);
 
-                            // B. Add full text to all 50 left-side dropdowns
+                            // Add truncated text to dropdowns
                             allDropdowns.forEach(dropdown => {
                                 let option = document.createElement('option');
                                 option.value = index; 
-                                option.text = outcome; 
+                                option.text = outcome; // CSS handles truncating it
                                 dropdown.appendChild(option);
                             });
                         });
@@ -325,7 +326,6 @@
 
         // 5. Update Red Tags Logic
         function updateTags() {
-            // Reset all numbers back to gray
             document.querySelectorAll('.number-item').forEach(item => {
                 item.classList.remove('selected');
             });
@@ -333,21 +333,18 @@
                 container.innerHTML = '';
             });
 
-            // Scan dropdowns and mark them red
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
                     const week = dropdown.getAttribute('data-week');
                     const term = dropdown.getAttribute('data-term');
-                    
-                    // Creates the (W1,T1) format
                     const shortcutText = `(${week},${term})`; 
 
                     const targetBox = document.getElementById(`num-item-${selectedIndex}`);
                     const targetTagContainer = document.getElementById(`tag-container-${selectedIndex}`);
                     
                     if (targetBox && targetTagContainer) {
-                        targetBox.classList.add('selected'); // Turns it red
+                        targetBox.classList.add('selected');
                         
                         const tag = document.createElement('span');
                         tag.className = 'shortcut-tag';
@@ -358,7 +355,7 @@
             });
         }
 
-        // 6. Generate Lesson Plan Logic (Unchanged)
+        // 6. Generate Lesson Plan Logic
         function generateLessonPlan() {
             const btn = document.getElementById('generateBtn');
             const statusDiv = document.getElementById('status');
