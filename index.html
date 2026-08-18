@@ -119,23 +119,23 @@
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
-            height: 85vh; /* Fixed height so the container stays still */
+            height: 85vh; 
             display: flex;
             flex-direction: column;
         }
 
-        /* NEW PREVIEW BOX (LOCKED AT THE TOP) */
+        /* PREVIEW BOX */
         .preview-box {
             background-color: white;
             border: 2px solid #3498db;
             border-radius: 8px;
             padding: 15px;
             min-height: 80px;
-            max-height: 120px; /* Prevents it from taking over the screen */
-            overflow-y: auto;  /* Adds a small scrollbar just for the text if it is huge */
+            max-height: 120px; 
+            overflow-y: auto;  
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             margin-bottom: 15px;
-            flex-shrink: 0; /* Keeps the box size stable */
+            flex-shrink: 0; 
         }
         .preview-title {
             font-size: 12px;
@@ -157,7 +157,7 @@
         
         /* SCROLLING AREA FOR THE NUMBERS ONLY */
         .grid-scroll-area {
-            overflow-y: auto; /* Only this section scrolls now */
+            overflow-y: auto; 
             flex-grow: 1;
             padding-right: 5px;
         }
@@ -188,10 +188,17 @@
         
         .number-item:hover { background-color: #d3d9df; }
 
-        .number-item.selected {
-            background: #dc3545; 
+        /* --- COLOR CODING STYLES --- */
+        .number-item.selected-t1 {
+            background: #dc3545; /* Red for Term 1 */
             color: white;
             border-color: #dc3545;
+        }
+
+        .number-item.selected-t2 {
+            background: #28a745; /* Green for Term 2 */
+            color: white;
+            border-color: #28a745;
         }
 
         .shortcut-tag {
@@ -266,7 +273,7 @@
                 <div class="outcomes-container">
                     <h3 dir="rtl">Outcomes</h3>
                     
-                    <!-- THE PREVIEW BOX IS NOW LOCKED AT THE TOP -->
+                    <!-- PREVIEW BOX -->
                     <div class="preview-box">
                         <div class="preview-title">Full Outcome Preview</div>
                         <div id="preview-content">Hover over a number or select a dropdown to read the full text here...</div>
@@ -274,7 +281,7 @@
 
                     <div id="outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
                     
-                    <!-- ONLY THE NUMBERS GRID SCROLLS NOW -->
+                    <!-- NUMBERS GRID -->
                     <div class="grid-scroll-area">
                         <div class="numbers-grid" id="outcomes-grid"></div>
                     </div>
@@ -288,7 +295,7 @@
     <script>
         // --- CONFIGURATION ---
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbx5Obu8O730P92doHjVupIcxpKg2bs5sg9w5UpqApXA3acYJyT8bZof7B3KSOHG85Kisw/exec';
-        let globalOutcomes = []; // Stores the full text
+        let globalOutcomes = []; 
 
         // 1. Initial Setup for Lesson Plan
         const yearDropdown = document.getElementById('year');
@@ -351,7 +358,6 @@
                         globalOutcomes = data.outcomes; 
                         
                         data.outcomes.forEach((outcome, index) => {
-                            // Add Number Box to Grid
                             let numBox = document.createElement('div');
                             numBox.className = 'number-item';
                             numBox.id = `num-item-${index}`;
@@ -361,7 +367,6 @@
                             numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="tag-container-${index}"></div>`;
                             gridElement.appendChild(numBox);
 
-                            // Add truncated text to dropdowns
                             allDropdowns.forEach(dropdown => {
                                 let option = document.createElement('option');
                                 option.value = index; 
@@ -387,19 +392,21 @@
             previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index]}`;
         }
 
-        // 6. Update Red Tags Logic
+        // 6. Update Color Tags Logic
         function updateTags(changedDropdown) {
             if (changedDropdown && changedDropdown.value !== "") {
                 showPreview(changedDropdown.value);
             }
 
+            // Remove all existing color classes and clear tags
             document.querySelectorAll('.number-item').forEach(item => {
-                item.classList.remove('selected');
+                item.classList.remove('selected-t1', 'selected-t2');
             });
             document.querySelectorAll('.tag-container').forEach(container => {
                 container.innerHTML = '';
             });
 
+            // Re-apply correct color classes based on the Term
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
@@ -411,7 +418,12 @@
                     const targetTagContainer = document.getElementById(`tag-container-${selectedIndex}`);
                     
                     if (targetBox && targetTagContainer) {
-                        targetBox.classList.add('selected');
+                        // Apply Red for Term 1, Green for Term 2
+                        if (term === 'T1') {
+                            targetBox.classList.add('selected-t1');
+                        } else if (term === 'T2') {
+                            targetBox.classList.add('selected-t2');
+                        }
                         
                         const tag = document.createElement('span');
                         tag.className = 'shortcut-tag';
