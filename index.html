@@ -9,158 +9,203 @@
             font-family: Arial, sans-serif;
             background-color: #f4f7f6;
             margin: 0;
-            padding: 40px 20px;
+            display: flex; /* Creates the left/right layout */
+            height: 100vh;
+        }
+        
+        /* Left Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-box {
+            padding: 20px;
+            margin: 10px 20px;
+            background-color: #34495e;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            transition: background 0.3s;
+        }
+        .sidebar-box:hover, .sidebar-box.active {
+            background-color: #3498db;
+        }
+
+        /* Right Content Area Styling */
+        .content-area {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
             display: flex;
             justify-content: center;
         }
         .portal-container {
             background: white;
-            max-width: 500px;
+            max-width: 600px;
             width: 100%;
             padding: 40px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        /* Header styling to match your image */
+
+        /* Header Styling */
         .school-header {
             text-align: center;
             border-bottom: 2px solid #333;
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
-        .school-header img {
-            width: 80px; 
-            margin-bottom: 10px;
-        }
-        .school-header h1 {
-            font-size: 28px;
-            margin: 5px 0;
-            color: #000;
-        }
-        .school-header h2 {
-            font-size: 20px;
-            margin: 5px 0;
-            color: #000;
-        }
-        /* Form styling */
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 20px;
-            margin-bottom: 5px;
-            text-align: right; 
-        }
-        select, input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 16px;
-            text-align: right; 
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            margin-top: 30px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        #status {
-            margin-top: 20px;
-            text-align: center;
-            font-weight: bold;
-            color: #0056b3;
-        }
+        .school-header img { width: 80px; margin-bottom: 10px; }
+        .school-header h1 { font-size: 28px; margin: 5px 0; color: #000; }
+        .school-header h2 { font-size: 20px; margin: 5px 0; color: #000; }
+
+        /* Form Styling */
+        label { font-weight: bold; display: block; margin-top: 20px; margin-bottom: 5px; text-align: right; }
+        select, input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; text-align: right; }
+        button { width: 100%; padding: 15px; margin-top: 30px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #218838; }
+        #status { margin-top: 20px; text-align: center; font-weight: bold; color: #0056b3; }
+
+        /* Scheme of Work Styling */
+        #sow-section { display: none; } /* Hidden by default */
+        .outcome-list { list-style-type: decimal; padding-right: 20px; text-align: right; line-height: 1.8; font-size: 18px; }
+        .outcome-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
     </style>
 </head>
-<body>
+<body dir="rtl">
 
-    <div class="portal-container" dir="rtl">
-        <!-- This section mimics your physical header -->
-        <div class="school-header">
-            <img src="School Bedge-01.png" alt="School Badge">
-            <h1>ވިލުފުށީ ސްކޫލް</h1>
-            <h2 id="dynamic-header-text">ލެސަން ޕްލޭން</h2>
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-box" id="box-sow" onclick="switchTab('sow')">Scheme of Work</div>
+        <div class="sidebar-box active" id="box-lp" onclick="switchTab('lp')">Lesson Plan</div>
+    </div>
+
+    <!-- RIGHT CONTENT AREA -->
+    <div class="content-area">
+        
+        <!-- LESSON PLAN FORM -->
+        <div class="portal-container" id="lesson-plan-section">
+            <div class="school-header">
+                <img src="School Bedge-01.png" alt="School Badge">
+                <h1>ވިލުފުށީ ސްކޫލް</h1>
+                <h2 id="dynamic-header-text">ލެސަން ޕްލޭން</h2>
+            </div>
+            <label>އަހަރު (Year)</label>
+            <select id="year" onchange="updateHeader()"></select>
+            <label>ޓާމް (Term)</label>
+            <select id="term" onchange="updateHeader()">
+                <option value="ފުރަތަމަ ޓާރމް">ފުރަތަމަ ޓާރމް</option>
+                <option value="ދެވަނަ ޓާރމް">ދެވަނަ ޓާރމް</option>
+            </select>
+            <label>ހަފްތާ (Week)</label>
+            <select id="week">
+                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                <option value="7">7</option><option value="8">8</option>
+            </select>
+            <button id="generateBtn" onclick="generateLessonPlan()">Generate Lesson Plan</button>
+            <div id="status"></div>
         </div>
 
-        <!-- Portal Controls -->
-        <label>އަހަރު (Year)</label>
-        <select id="year" onchange="updateHeader()"></select>
+        <!-- SCHEME OF WORK LIST -->
+        <div class="portal-container" id="sow-section">
+            <div class="school-header">
+                <img src="School Bedge-01.png" alt="School Badge">
+                <h1>ވިލުފުށީ ސްކޫލް</h1>
+                <h2>Scheme of Work - Outcomes</h2>
+            </div>
+            <div id="outcomes-loading" style="text-align: center; font-size: 18px;">Loading outcomes from spreadsheet...</div>
+            <ol class="outcome-list" id="outcomes-list"></ol>
+        </div>
 
-        <label>ޓާމް (Term)</label>
-        <select id="term" onchange="updateHeader()">
-            <option value="ފުރަތަމަ ޓާރމް">ފުރަތަމަ ޓާރމް</option>
-            <option value="ދެވަނަ ޓާރމް">ދެވަނަ ޓާރމް</option>
-        </select>
-
-        <label>ހަފްތާ (Week)</label>
-        <select id="week">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-        </select>
-
-        <button id="generateBtn" onclick="generateLessonPlan()">Generate Lesson Plan</button>
-        
-        <div id="status"></div>
     </div>
 
     <script>
-        // Automatically populate the Year dropdown from 2026 to 2050
+        // --- CONFIGURATION ---
+        // PASTE YOUR GOOGLE WEB APP URL HERE:
+        const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbxJCuD_v6NuQaYLNW7rsnIwNy2zMmrgactWFH98duCcraoc0GCKwTE4F__JlB13UIytHQ/exec';
+
+        // 1. Initial Setup
         const yearDropdown = document.getElementById('year');
         for (let i = 2026; i <= 2050; i++) {
             let option = document.createElement('option');
-            option.value = i;
-            option.text = i;
+            option.value = i; option.text = i;
             yearDropdown.appendChild(option);
         }
 
-        // Update the header text dynamically when Term or Year changes
         function updateHeader() {
-            const selectedYear = document.getElementById('year').value;
-            const selectedTerm = document.getElementById('term').value;
-            document.getElementById('dynamic-header-text').innerText = `${selectedTerm} - ${selectedYear}`;
+            const y = document.getElementById('year').value;
+            const t = document.getElementById('term').value;
+            document.getElementById('dynamic-header-text').innerText = `${t} - ${y}`;
         }
-        
-        // Run once on load to set the initial header
         updateHeader();
 
-        // Connect to Google Apps Script Backend
+        // 2. Tab Switching Logic
+        let outcomesLoaded = false;
+
+        function switchTab(tab) {
+            // Update buttons
+            document.getElementById('box-sow').classList.remove('active');
+            document.getElementById('box-lp').classList.remove('active');
+            document.getElementById(`box-${tab}`).classList.add('active');
+
+            // Update content visibility
+            document.getElementById('lesson-plan-section').style.display = 'none';
+            document.getElementById('sow-section').style.display = 'none';
+
+            if (tab === 'lp') {
+                document.getElementById('lesson-plan-section').style.display = 'block';
+            } else if (tab === 'sow') {
+                document.getElementById('sow-section').style.display = 'block';
+                if (!outcomesLoaded) fetchOutcomes(); // Only load from Google once
+            }
+        }
+
+        // 3. Fetch Outcomes from Google Sheets
+        function fetchOutcomes() {
+            const requestUrl = `${googleAppScriptUrl}?action=getOutcomes`;
+            fetch(requestUrl)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('outcomes-loading').style.display = 'none';
+                    const listElement = document.getElementById('outcomes-list');
+                    if (data.success) {
+                        data.outcomes.forEach(outcome => {
+                            let li = document.createElement('li');
+                            li.className = 'outcome-item';
+                            li.innerText = outcome;
+                            listElement.appendChild(li);
+                        });
+                        outcomesLoaded = true;
+                    } else {
+                        listElement.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`;
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('outcomes-loading').innerText = "Failed to load outcomes.";
+                });
+        }
+
+        // 4. Generate Lesson Plan (Same as before)
         function generateLessonPlan() {
             const btn = document.getElementById('generateBtn');
             const statusDiv = document.getElementById('status');
-            
-            // Disable button so user doesn't click twice
             btn.disabled = true;
-            btn.innerText = "Generating PDF... Please wait (this takes about 10 seconds)";
+            btn.innerText = "Generating PDF... Please wait";
             statusDiv.innerHTML = "";
 
-            // Get values from dropdowns
             const year = document.getElementById('year').value;
             const term = document.getElementById('term').value;
             const week = document.getElementById('week').value;
-
-            // YOUR GOOGLE WEB APP URL
-            const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbxJCuD_v6NuQaYLNW7rsnIwNy2zMmrgactWFH98duCcraoc0GCKwTE4F__JlB13UIytHQ/exec';
             
-            // Create the exact link to trigger the script
             const requestUrl = `${googleAppScriptUrl}?year=${encodeURIComponent(year)}&term=${encodeURIComponent(term)}&week=${encodeURIComponent(week)}`;
 
-            // Call the Google script
             fetch(requestUrl)
                 .then(response => response.json())
                 .then(data => {
