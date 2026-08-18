@@ -13,10 +13,10 @@
             height: 100vh;
         }
         
-        /* Left Sidebar Styling */
+        /* Left Sidebar Styling (Now narrower and Blue) */
         .sidebar {
-            width: 220px;
-            background-color: #2c3e50;
+            width: 150px; /* Made narrower */
+            background-color: #1e4a79; /* Nice blue color */
             color: white;
             padding: 20px 0;
             display: flex;
@@ -24,22 +24,23 @@
             flex-shrink: 0;
         }
         .sidebar-box {
-            padding: 15px;
-            margin: 10px 15px;
-            background-color: #34495e;
+            padding: 12px 10px;
+            margin: 10px;
+            background-color: #2964a3;
             text-align: center;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             transition: background 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .sidebar-box:hover, .sidebar-box.active { background-color: #3498db; }
+        .sidebar-box:hover, .sidebar-box.active { background-color: #4da3ff; }
 
         /* Right Content Area Styling */
         .content-area {
             flex-grow: 1;
-            padding: 30px;
+            padding: 20px;
             overflow-y: auto;
             display: flex;
             justify-content: center;
@@ -48,23 +49,24 @@
         
         .portal-container {
             background: white;
-            max-width: 500px; /* Standard width for Lesson Plan */
+            max-width: 500px;
             width: 100%;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
-        /* Specific WIDE container just for Scheme of Work */
+        /* Scheme of Work Container (Wide) */
         #sow-section {
-            max-width: 95%; /* Makes screen very wide */
+            max-width: 98%; 
+            width: 100%;
             display: none;
         }
 
         /* Header Styling */
-        .school-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-        .school-header img { width: 70px; margin-bottom: 5px; }
-        .school-header h1 { font-size: 24px; margin: 5px 0; color: #000; }
+        .school-header { text-align: center; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-bottom: 20px; }
+        .school-header img { width: 60px; margin-bottom: 5px; }
+        .school-header h1 { font-size: 22px; margin: 5px 0; color: #000; }
         .school-header h2 { font-size: 18px; margin: 5px 0; color: #000; }
 
         /* Forms inside Lesson Plan */
@@ -77,28 +79,28 @@
         /* --- SCHEME OF WORK NEW LAYOUT --- */
         .sow-layout {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: flex-start;
         }
 
-        /* Left Side: Term Columns */
+        /* Left Side: Term Columns (Takes up more space so text isn't squished) */
         .terms-container {
-            flex: 1.2;
+            flex: 3; 
             display: flex;
-            gap: 20px;
+            gap: 15px;
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
         }
         .term-col { flex: 1; }
-        .term-col h3 { text-align: center; font-size: 14px; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0; }
+        .term-col h3 { text-align: center; font-size: 16px; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0; }
         
         .week-row { display: flex; align-items: center; margin-bottom: 8px; }
-        .week-row label { width: 35px; font-weight: bold; font-size: 12px; color: #333; margin: 0; }
+        .week-row label { width: 40px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: center; }
         .week-row select { 
             flex: 1; 
-            padding: 4px; 
-            font-size: 12px; 
+            padding: 6px; 
+            font-size: 13px; 
             direction: rtl; 
             border: 1px solid #ccc; 
             border-radius: 4px;
@@ -107,9 +109,10 @@
             text-overflow: ellipsis;
         }
 
-        /* Right Side: Outcomes List */
+        /* Right Side: Outcomes Grid (Takes up less space) */
         .outcomes-container {
             flex: 1;
+            min-width: 200px;
             background: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
@@ -117,42 +120,46 @@
             overflow-y: auto;
         }
         .outcomes-container h3 { text-align: center; font-size: 16px; border-bottom: 2px solid #ccc; padding-bottom: 10px; margin-top: 0;}
-        .outcome-list { list-style-type: decimal; padding-right: 20px; text-align: right; margin: 0; }
         
-        .outcome-item {
-            margin-bottom: 15px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            font-size: 13px; /* Reduced Font Size */
-            line-height: 1.6;
+        /* Number Grid Layout */
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 columns of numbers */
+            gap: 8px;
+            direction: ltr; /* English text direction for tags */
+        }
+        
+        .number-item {
+            background: #e9ecef;
+            border: 1px solid #ced4da;
+            padding: 10px 5px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.2s;
+            cursor: help; /* Shows a question mark on hover */
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 45px;
+        }
+        
+        /* Red Styling for Selected Outcomes */
+        .number-item.selected {
+            background: #dc3545; /* Red background */
+            color: white;
+            border-color: #dc3545;
         }
 
-        /* Red Dot Tag Styling */
-        .tag-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-            direction: ltr; /* English tags read left to right */
-        }
-        .red-tag {
-            background-color: #dc3545;
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
+        /* The (W1,T1) Text */
+        .shortcut-tag {
             font-size: 11px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-        .red-tag::before {
-            content: '•';
-            margin-right: 5px;
-            font-size: 16px;
-            line-height: 1;
+            font-weight: normal;
+            margin-top: 4px;
+            display: block;
         }
     </style>
 </head>
@@ -191,7 +198,7 @@
             <div id="status"></div>
         </div>
 
-        <!-- SCHEME OF WORK NEW LAYOUT -->
+        <!-- SCHEME OF WORK MATRIX -->
         <div class="portal-container" id="sow-section">
             <div class="school-header">
                 <img src="School Bedge-01.png" alt="School Badge">
@@ -199,7 +206,7 @@
                 <h2>Scheme of Work Matrix</h2>
             </div>
             
-            <div class="sow-layout" dir="ltr"> <!-- Force LTR for layout so Terms are left, Outcomes right -->
+            <div class="sow-layout" dir="ltr"> <!-- LTR layout to keep terms on left -->
                 
                 <!-- Left Side: Terms and 25 Weeks -->
                 <div class="terms-container">
@@ -213,11 +220,12 @@
                     </div>
                 </div>
 
-                <!-- Right Side: Outcomes -->
+                <!-- Right Side: Outcomes Numbers Grid -->
                 <div class="outcomes-container" dir="rtl">
                     <h3>Outcomes</h3>
-                    <div id="outcomes-loading" style="text-align: center; font-size: 14px;">Loading outcomes...</div>
-                    <ol class="outcome-list" id="outcomes-list"></ol>
+                    <div id="outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
+                    <!-- Number Grid instead of a list -->
+                    <div class="numbers-grid" id="outcomes-grid"></div>
                 </div>
                 
             </div>
@@ -244,13 +252,14 @@
         }
         updateHeader();
 
-        // 2. Generate the 25 Weeks for Term 1 and Term 2
+        // 2. Generate the 25 Weeks 
         function generateWeekRows() {
             const t1Container = document.getElementById('term1-weeks');
             const t2Container = document.getElementById('term2-weeks');
             let t1Html = ''; let t2Html = '';
             
             for (let i = 1; i <= 25; i++) {
+                // Notice the data-term is T1 and data-week is W1, etc.
                 t1Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags()"><option value="">--</option></select></div>`;
                 t2Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags()"><option value="">--</option></select></div>`;
             }
@@ -277,34 +286,36 @@
             }
         }
 
-        // 4. Fetch Outcomes & Populate Lists/Dropdowns
+        // 4. Fetch Outcomes & Populate Grid/Dropdowns
         function fetchOutcomes() {
             fetch(`${googleAppScriptUrl}?action=getOutcomes`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('outcomes-loading').style.display = 'none';
-                    const listElement = document.getElementById('outcomes-list');
+                    const gridElement = document.getElementById('outcomes-grid');
                     const allDropdowns = document.querySelectorAll('.outcome-dropdown');
                     
                     if (data.success) {
                         data.outcomes.forEach((outcome, index) => {
-                            // A. Add to right-side list
-                            let li = document.createElement('li');
-                            li.className = 'outcome-item';
-                            li.innerHTML = `<span>${outcome}</span><div class="tag-container" id="tag-container-${index}"></div>`;
-                            listElement.appendChild(li);
+                            // A. Add to right-side Grid as just a number
+                            let numBox = document.createElement('div');
+                            numBox.className = 'number-item';
+                            numBox.id = `num-item-${index}`;
+                            numBox.title = outcome; // Hover to read full text!
+                            numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="tag-container-${index}"></div>`;
+                            gridElement.appendChild(numBox);
 
-                            // B. Add to all 50 left-side dropdowns
+                            // B. Add full text to all 50 left-side dropdowns
                             allDropdowns.forEach(dropdown => {
                                 let option = document.createElement('option');
                                 option.value = index; 
-                                option.text = outcome.substring(0, 60) + "..."; // Shortened for dropdown
+                                option.text = outcome; 
                                 dropdown.appendChild(option);
                             });
                         });
                         outcomesLoaded = true;
                     } else {
-                        listElement.innerHTML = `<span style="color: red;">Error loading data</span>`;
+                        gridElement.innerHTML = `<span style="color: red;">Error loading data</span>`;
                     }
                 })
                 .catch(error => {
@@ -314,24 +325,33 @@
 
         // 5. Update Red Tags Logic
         function updateTags() {
-            // Clear all current red tags
+            // Reset all numbers back to gray
+            document.querySelectorAll('.number-item').forEach(item => {
+                item.classList.remove('selected');
+            });
             document.querySelectorAll('.tag-container').forEach(container => {
                 container.innerHTML = '';
             });
 
-            // Scan all dropdowns and add tags to the selected outcomes
+            // Scan dropdowns and mark them red
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
                     const week = dropdown.getAttribute('data-week');
                     const term = dropdown.getAttribute('data-term');
-                    const shortcut = `${week}${term}`; // e.g., W1T1
+                    
+                    // Creates the (W1,T1) format
+                    const shortcutText = `(${week},${term})`; 
 
+                    const targetBox = document.getElementById(`num-item-${selectedIndex}`);
                     const targetTagContainer = document.getElementById(`tag-container-${selectedIndex}`);
-                    if (targetTagContainer) {
+                    
+                    if (targetBox && targetTagContainer) {
+                        targetBox.classList.add('selected'); // Turns it red
+                        
                         const tag = document.createElement('span');
-                        tag.className = 'red-tag';
-                        tag.innerText = shortcut;
+                        tag.className = 'shortcut-tag';
+                        tag.innerText = shortcutText;
                         targetTagContainer.appendChild(tag);
                     }
                 }
