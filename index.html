@@ -100,9 +100,14 @@
             margin-top: 0; 
         }
         
-        /* Week Rows and Dropdowns */
-        .week-row { display: flex; align-items: center; margin-bottom: 8px; width: 100%; }
-        .week-row label { width: 40px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: left; }
+        /* Week Rows and Dynamic Dropdowns */
+        .week-group {
+            border-bottom: 1px dashed #ddd;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        .week-row { display: flex; align-items: center; margin-bottom: 4px; width: 100%; gap: 6px; }
+        .week-row label { width: 35px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: left; flex-shrink: 0; }
         .week-row select { 
             flex: 1; 
             padding: 6px; 
@@ -112,6 +117,19 @@
             border-radius: 4px;
             width: 100%;
         }
+
+        /* Add/Remove Buttons */
+        .action-btn {
+            width: 28px; height: 28px;
+            border: none; border-radius: 4px;
+            cursor: pointer; font-weight: bold; font-size: 16px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .add-btn { background-color: #e9ecef; color: #495057; border: 1px solid #ced4da; }
+        .add-btn:hover { background-color: #dde2e6; }
+        .remove-btn { background-color: #ffeaea; color: #dc3545; border: 1px solid #ffc2c2; font-size: 18px; }
+        .remove-btn:hover { background-color: #ffd1d1; }
 
         /* Right Side: Outcomes Container */
         .outcomes-container {
@@ -312,22 +330,78 @@
         }
         updateHeader();
 
-        // 2. Generate the 25 Weeks 
+        // 2. Generate the 25 Weeks with Add (+) Buttons
         function generateWeekRows() {
             const t1Container = document.getElementById('term1-weeks');
             const t2Container = document.getElementById('term2-weeks');
             let t1Html = ''; let t2Html = '';
             
             for (let i = 1; i <= 25; i++) {
-                t1Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags(this)"><option value="">-- Select --</option></select></div>`;
-                t2Html += `<div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags(this)"><option value="">-- Select --</option></select></div>`;
+                // TERM 1 ROW
+                t1Html += `
+                <div class="week-group" id="t1-w${i}">
+                    <div class="week-row">
+                        <label>W${i}</label>
+                        <select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags(this)">
+                            <option value="">-- Select --</option>
+                        </select>
+                        <button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 't1-w${i}')">+</button>
+                    </div>
+                </div>`;
+                
+                // TERM 2 ROW
+                t2Html += `
+                <div class="week-group" id="t2-w${i}">
+                    <div class="week-row">
+                        <label>W${i}</label>
+                        <select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags(this)">
+                            <option value="">-- Select --</option>
+                        </select>
+                        <button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 't2-w${i}')">+</button>
+                    </div>
+                </div>`;
             }
             t1Container.innerHTML = t1Html;
             t2Container.innerHTML = t2Html;
         }
         generateWeekRows();
 
-        // 3. Tab Switching Logic
+        // 3. Logic to Add a new Dropdown row when [+] is clicked
+        function addDropdown(term, week, containerId) {
+            const container = document.getElementById(containerId);
+            const row = document.createElement('div');
+            row.className = 'week-row';
+            
+            row.innerHTML = `
+                <label></label> <!-- Empty label to keep alignment perfectly straight -->
+                <select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags(this)">
+                    <option value="">-- Select --</option>
+                </select>
+                <button class="action-btn remove-btn" title="Remove" onclick="removeDropdown(this)">×</button>
+            `;
+            
+            container.appendChild(row);
+
+            // Populate the new empty dropdown with our loaded outcomes
+            const select = row.querySelector('select');
+            if (globalOutcomes.length > 0) {
+                globalOutcomes.forEach((outcome, index) => {
+                    let option = document.createElement('option');
+                    option.value = index; 
+                    let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
+                    option.text = `${index + 1} - ${shortText}`; 
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        // 4. Logic to Remove a Dropdown when [x] is clicked
+        function removeDropdown(btn) {
+            btn.parentElement.remove(); // Deletes the row
+            updateTags(); // Refreshes the red/green tags so the deleted one disappears
+        }
+
+        // 5. Tab Switching Logic
         let outcomesLoaded = false;
         function switchTab(tab) {
             document.getElementById('box-sow').classList.remove('active');
@@ -345,7 +419,7 @@
             }
         }
 
-        // 4. Fetch Outcomes & Populate Grid/Dropdowns
+        // 6. Fetch Outcomes & Populate Grid/Dropdowns
         function fetchOutcomes() {
             fetch(`${googleAppScriptUrl}?action=getOutcomes`)
                 .then(response => response.json())
@@ -385,20 +459,19 @@
                 });
         }
 
-        // 5. Preview Display Function
+        // 7. Preview Display Function
         function showPreview(index) {
             const previewBox = document.getElementById('preview-content');
             previewBox.style.color = '#000'; 
             previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index]}`;
         }
 
-        // 6. Update Color Tags Logic
+        // 8. Update Color Tags Logic
         function updateTags(changedDropdown) {
             if (changedDropdown && changedDropdown.value !== "") {
                 showPreview(changedDropdown.value);
             }
 
-            // Remove all existing color classes and clear tags
             document.querySelectorAll('.number-item').forEach(item => {
                 item.classList.remove('selected-t1', 'selected-t2');
             });
@@ -406,7 +479,6 @@
                 container.innerHTML = '';
             });
 
-            // Re-apply correct color classes based on the Term
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
@@ -418,7 +490,6 @@
                     const targetTagContainer = document.getElementById(`tag-container-${selectedIndex}`);
                     
                     if (targetBox && targetTagContainer) {
-                        // Apply Red for Term 1, Green for Term 2
                         if (term === 'T1') {
                             targetBox.classList.add('selected-t1');
                         } else if (term === 'T2') {
@@ -434,7 +505,7 @@
             });
         }
 
-        // 7. Generate Lesson Plan Logic
+        // 9. Generate Lesson Plan Logic
         function generateLessonPlan() {
             const btn = document.getElementById('generateBtn');
             const statusDiv = document.getElementById('status');
