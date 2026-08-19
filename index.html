@@ -157,43 +157,29 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbx5Obu8O730P92doHjVupIcxpKg2bs5sg9w5UpqApXA3acYJyT8bZof7B3KSOHG85Kisw/exec';
-        
         let globalOutcomes = []; 
 
-        // 1. Initial Setup for Years & Weeks
         const lpYearDropdown = document.getElementById('lp-year');
         const sowYearDropdown = document.getElementById('sow-year');
         for (let i = 2024; i <= 2050; i++) {
             let optionLP = document.createElement('option'); optionLP.value = i; optionLP.text = i; lpYearDropdown.appendChild(optionLP);
             let optionSOW = document.createElement('option'); optionSOW.value = i; optionSOW.text = i; sowYearDropdown.appendChild(optionSOW);
         }
-        lpYearDropdown.value = 2026; 
-        sowYearDropdown.value = 2026;
+        lpYearDropdown.value = 2026; sowYearDropdown.value = 2026;
 
         const exportLpWeek = document.getElementById('export-lp-week');
         for (let i = 1; i <= 25; i++) {
             let opt = document.createElement('option'); opt.value = `W${i}`; opt.text = `Week ${i}`; exportLpWeek.appendChild(opt);
         }
 
-        // Date Formatter ("Aug 16 - Aug 22")
         function getFormattedDateRange(startRaw, endRaw) {
             if (!startRaw && !endRaw) return "";
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            
             let startStr = "";
-            if (startRaw) {
-                let d1 = new Date(startRaw);
-                if (!isNaN(d1)) startStr = `${months[d1.getMonth()]} ${d1.getDate()}`;
-            }
-            
+            if (startRaw) { let d1 = new Date(startRaw); if (!isNaN(d1)) startStr = `${months[d1.getMonth()]} ${d1.getDate()}`; }
             let endStr = "";
-            if (endRaw) {
-                let d2 = new Date(endRaw);
-                if (!isNaN(d2)) endStr = `${months[d2.getMonth()]} ${d2.getDate()}`;
-            }
-
+            if (endRaw) { let d2 = new Date(endRaw); if (!isNaN(d2)) endStr = `${months[d2.getMonth()]} ${d2.getDate()}`; }
             if (startStr && endStr) return `${startStr} - ${endStr}`;
             if (startStr) return startStr;
             if (endStr) return endStr;
@@ -219,29 +205,18 @@
                 t1Html += `
                 <div class="week-group" id="lp-t1-w${i}">
                     <div class="date-picker-row" dir="ltr">
-                        <span class="date-label">Dates:</span>
-                        <input type="date" class="lp-date-start" data-term="T1" data-week="W${i}">
-                        <span class="date-to">to</span>
-                        <input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
+                        <span class="date-label">Dates:</span><input type="date" class="lp-date-start" data-term="T1" data-week="W${i}"><span class="date-to">to</span><input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
                         <span class="date-to" style="margin-left: 5px;">Time:</span>
-                        <select class="lp-time-duration" data-term="T1" data-week="W${i}">
-                            <option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option>
-                        </select>
+                        <select class="lp-time-duration" data-term="T1" data-week="W${i}"><option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option></select>
                     </div>
                     <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button></div>
                 </div>`;
-                
                 t2Html += `
                 <div class="week-group" id="lp-t2-w${i}">
                     <div class="date-picker-row" dir="ltr">
-                        <span class="date-label">Dates:</span>
-                        <input type="date" class="lp-date-start" data-term="T2" data-week="W${i}">
-                        <span class="date-to">to</span>
-                        <input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
+                        <span class="date-label">Dates:</span><input type="date" class="lp-date-start" data-term="T2" data-week="W${i}"><span class="date-to">to</span><input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
                         <span class="date-to" style="margin-left: 5px;">Time:</span>
-                        <select class="lp-time-duration" data-term="T2" data-week="W${i}">
-                            <option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option>
-                        </select>
+                        <select class="lp-time-duration" data-term="T2" data-week="W${i}"><option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option></select>
                     </div>
                     <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button></div>
                 </div>`;
@@ -254,7 +229,6 @@
             const row = document.createElement('div'); row.className = 'week-row';
             row.innerHTML = `<label></label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags('${prefix}', this)"><option value="">-- Select --</option></select><button class="action-btn remove-btn" title="Remove" onclick="removeDropdown(this, '${prefix}')">×</button>`;
             container.appendChild(row);
-            
             const select = row.querySelector('select');
             if (globalOutcomes.length > 0) {
                 globalOutcomes.forEach((outcome, index) => {
@@ -275,39 +249,29 @@
 
         function loadCurriculum(source) {
             if (source) syncSelectors(source);
-            generateSowWeekRows();
-            generateLpWeekRows();
-            document.getElementById('sow-outcomes-grid').innerHTML = '';
-            document.getElementById('lp-outcomes-grid').innerHTML = '';
+            generateSowWeekRows(); generateLpWeekRows();
+            document.getElementById('sow-outcomes-grid').innerHTML = ''; document.getElementById('lp-outcomes-grid').innerHTML = '';
             document.getElementById('sow-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
             document.getElementById('lp-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
             fetchOutcomes();
         }
 
         function fetchOutcomes() {
-            const subject = document.getElementById('sow-subject').value; 
-            const grade = document.getElementById('sow-grade').value;
-
-            const sowLoad = document.getElementById('sow-outcomes-loading');
-            const lpLoad = document.getElementById('lp-outcomes-loading');
-
+            const subject = document.getElementById('sow-subject').value; const grade = document.getElementById('sow-grade').value;
+            const sowLoad = document.getElementById('sow-outcomes-loading'); const lpLoad = document.getElementById('lp-outcomes-loading');
             sowLoad.style.display = 'block'; lpLoad.style.display = 'block';
-            sowLoad.innerHTML = '<b>Connecting to Google Sheets... Please wait.</b>';
-            lpLoad.innerHTML = '<b>Connecting to Google Sheets... Please wait.</b>';
+            sowLoad.innerHTML = '<b>Connecting to Google Sheets... Please wait.</b>'; lpLoad.innerHTML = '<b>Connecting to Google Sheets... Please wait.</b>';
 
             fetch(`${googleAppScriptUrl}?action=getOutcomes&subject=${subject}&grade=${grade}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        globalOutcomes = data.outcomes; 
-                        populateUI('sow');
-                        populateUI('lp');
+                        globalOutcomes = data.outcomes; populateUI('sow'); populateUI('lp');
                     } else {
                         sowLoad.innerHTML = `<b>Error:</b> ${data.error}<br>Please make sure this exact tab exists in your Google Sheet.`;
                         lpLoad.innerHTML = `<b>Error:</b> ${data.error}<br>Please make sure this exact tab exists in your Google Sheet.`;
                     }
-                })
-                .catch(error => {
+                }).catch(error => {
                     sowLoad.innerHTML = `Failed to connect. Google might be busy. Please refresh the page.`;
                     lpLoad.innerHTML = `Failed to connect. Google might be busy. Please refresh the page.`;
                 });
@@ -320,37 +284,27 @@
             const allDropdowns = document.querySelectorAll(`#${sectionId} .outcome-dropdown`);
 
             globalOutcomes.forEach((outcomeObj, index) => {
-                let numBox = document.createElement('div');
-                numBox.className = 'number-item';
-                numBox.id = `${prefix}-num-item-${index}`;
+                let numBox = document.createElement('div'); numBox.className = 'number-item'; numBox.id = `${prefix}-num-item-${index}`;
                 numBox.onmouseover = function() { showPreview(prefix, index); };
                 numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="${prefix}-tag-container-${index}"></div>`;
                 gridElement.appendChild(numBox);
 
                 allDropdowns.forEach(dropdown => {
-                    let option = document.createElement('option');
-                    option.value = index;
+                    let option = document.createElement('option'); option.value = index;
                     let shortText = outcomeObj.text.length > 55 ? outcomeObj.text.substring(0, 55) + "..." : outcomeObj.text;
-                    option.text = `${index + 1} - ${shortText}`;
-                    dropdown.appendChild(option);
+                    option.text = `${index + 1} - ${shortText}`; dropdown.appendChild(option);
                 });
             });
         }
 
         function switchTab(tab) {
-            document.getElementById('box-sow').classList.remove('active'); 
-            document.getElementById('box-lp').classList.remove('active'); 
-            document.getElementById(`box-${tab}`).classList.add('active');
-            document.getElementById('lesson-plan-section').style.display = 'none'; 
-            document.getElementById('sow-section').style.display = 'none';
-            if (tab === 'lp') { document.getElementById('lesson-plan-section').style.display = 'block'; } 
-            else if (tab === 'sow') { document.getElementById('sow-section').style.display = 'block'; }
+            document.getElementById('box-sow').classList.remove('active'); document.getElementById('box-lp').classList.remove('active'); document.getElementById(`box-${tab}`).classList.add('active');
+            document.getElementById('lesson-plan-section').style.display = 'none'; document.getElementById('sow-section').style.display = 'none';
+            if (tab === 'lp') { document.getElementById('lesson-plan-section').style.display = 'block'; } else if (tab === 'sow') { document.getElementById('sow-section').style.display = 'block'; }
         }
 
         function showPreview(prefix, index) {
-            const previewBox = document.getElementById(`${prefix}-preview-content`); 
-            previewBox.style.color = '#000'; 
-            previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index].text}`;
+            const previewBox = document.getElementById(`${prefix}-preview-content`); previewBox.style.color = '#000'; previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index].text}`;
         }
 
         function updateTags(prefix, changedDropdown) {
@@ -396,16 +350,10 @@
         }
 
         function generateLessonPlan() {
-            const btn = document.getElementById('generateLpBtn'); 
-            const statusDiv = document.getElementById('lp-generate-status');
-            
-            const exportTerm = document.getElementById('export-lp-term').value;
-            const exportWeek = document.getElementById('export-lp-week').value;
-            
-            const year = document.getElementById('lp-year').value; 
-            const subjectSelect = document.getElementById('lp-subject');
-            const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; 
-            const grade = document.getElementById('lp-grade').value;
+            const btn = document.getElementById('generateLpBtn'); const statusDiv = document.getElementById('lp-generate-status');
+            const exportTerm = document.getElementById('export-lp-term').value; const exportWeek = document.getElementById('export-lp-week').value;
+            const year = document.getElementById('lp-year').value; const subjectSelect = document.getElementById('lp-subject');
+            const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; const grade = document.getElementById('lp-grade').value;
 
             let lpData = { T1: {}, T2: {} };
             let hasData = false;
@@ -416,9 +364,7 @@
             if (targetGroup) {
                 targetGroup.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                     if (dropdown.value !== "") {
-                        const index = dropdown.value; 
-                        const fullObj = globalOutcomes[index]; 
-
+                        const index = dropdown.value; const fullObj = globalOutcomes[index]; 
                         const startDateRaw = targetGroup.querySelector('.lp-date-start').value;
                         const endDateRaw = targetGroup.querySelector('.lp-date-end').value;
                         const timeSelect = targetGroup.querySelector('.lp-time-duration');
@@ -431,46 +377,26 @@
                             time: timeValue,
                             outcome: fullObj.text,
                             strand: fullObj.strand,
-                            substrand: fullObj.substrand
+                            substrand: fullObj.substrand,
+                            indicators: fullObj.indicators
                         });
-                        
                         hasData = true;
                     }
                 });
             }
 
-            if (!hasData) {
-                statusDiv.innerHTML = `<span style="color: red;">Error: No outcomes have been selected for ${exportTerm} ${exportWeek}. Please select at least one outcome.</span>`;
-                return;
-            }
+            if (!hasData) { statusDiv.innerHTML = `<span style="color: red;">Error: No outcomes have been selected for ${exportTerm} ${exportWeek}. Please select at least one outcome.</span>`; return; }
 
-            btn.disabled = true; 
-            btn.innerText = "Generating Lesson Plan PDF... Please wait"; 
-            statusDiv.innerHTML = "";
+            btn.disabled = true; btn.innerText = "Generating Lesson Plan PDF... Please wait"; statusDiv.innerHTML = "";
 
-            const payload = {
-                action: 'generateLP',
-                year: year,
-                subject: subjectText,
-                grade: grade,
-                lpData: lpData
-            };
+            const payload = { action: 'generateLP', year: year, subject: subjectText, grade: grade, lpData: lpData };
 
-            fetch(googleAppScriptUrl, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
-                body: JSON.stringify(payload) 
-            })
+            fetch(googleAppScriptUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
             .then(response => response.json()).then(data => {
-                if (data.success) { 
-                    statusDiv.innerHTML = `Success! <br><br> <a href="${data.url}" target="_blank" style="color: #d9534f; font-size: 18px;">Click here to download your Lesson Plan PDF</a>`; 
-                } else { 
-                    statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`; 
-                }
+                if (data.success) { statusDiv.innerHTML = `Success! <br><br> <a href="${data.url}" target="_blank" style="color: #d9534f; font-size: 18px;">Click here to download your Lesson Plan PDF</a>`; } else { statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`; }
                 btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
             }).catch(error => {
-                statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server. Ensure you Deployed a NEW Version in Google.</span>`; 
-                btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
+                statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server. Ensure you Deployed a NEW Version in Google.</span>`; btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
             });
         }
 
