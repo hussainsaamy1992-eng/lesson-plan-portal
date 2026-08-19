@@ -58,7 +58,6 @@
 
         .generate-wrapper { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd; }
         
-        /* NEW: Export Selection Styling */
         .export-controls { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; background: #e9ecef; padding: 10px; border-radius: 6px; display: inline-flex; }
         .export-controls label { font-weight: bold; color: #333; }
         .export-controls select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; font-weight: bold; direction: rtl; }
@@ -81,21 +80,15 @@
 
     <div class="content-area">
         
-        <!-- ============================================== -->
-        <!-- SCHEME OF WORK MATRIX                          -->
-        <!-- ============================================== -->
+        <!-- SCHEME OF WORK MATRIX -->
         <div class="portal-container" id="sow-section" style="display: block;">
             <div class="school-header">
                 <img src="School Bedge-01.png" alt="School Badge">
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
-                
                 <div class="sow-controls-container" dir="rtl">
                     <select id="sow-subject" onchange="loadCurriculum('sow')">
-                        <option value="ISLAM">އިސްލާމް (Islam)</option>
-                        <option value="DHIVEHI">ދިވެހި (Dhivehi)</option>
-                        <option value="QURAN">ޤުރްއާން (Quran)</option>
-                        <option value="ARABIC">ޢަރަބި (Arabic)</option>
-                        <option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
+                        <option value="ISLAM">އިސްލާމް (Islam)</option><option value="DHIVEHI">ދިވެހި (Dhivehi)</option><option value="QURAN">ޤުރްއާން (Quran)</option>
+                        <option value="ARABIC">ޢަރަބި (Arabic)</option><option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
                     </select>
                     <select id="sow-grade" onchange="loadCurriculum('sow')">
                         <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option><option value="4">Grade 4</option>
@@ -106,50 +99,30 @@
                 </div>
                 <h2>Scheme of Work Matrix</h2>
             </div>
-            
             <div class="sow-layout"> 
-                <div class="term-col">
-                    <h3 dir="rtl">ފުރަތަމަ ޓާރމް (Term 1)</h3>
-                    <div id="sow-term1-weeks"></div>
-                </div>
-                <div class="term-col">
-                    <h3 dir="rtl">ދެވަނަ ޓާރމް (Term 2)</h3>
-                    <div id="sow-term2-weeks"></div>
-                </div>
-                <div class="outcomes-container">
-                    <h3 dir="rtl">Outcomes</h3>
-                    <div class="preview-box">
-                        <div class="preview-title">Full Outcome Preview</div>
-                        <div id="sow-preview-content" class="preview-content">Hover over a number or select a dropdown to read the full text here...</div>
-                    </div>
+                <div class="term-col"><h3 dir="rtl">ފުރަތަމަ ޓާރމް (Term 1)</h3><div id="sow-term1-weeks"></div></div>
+                <div class="term-col"><h3 dir="rtl">ދެވަނަ ޓާރމް (Term 2)</h3><div id="sow-term2-weeks"></div></div>
+                <div class="outcomes-container"><h3 dir="rtl">Outcomes</h3>
+                    <div class="preview-box"><div class="preview-title">Full Outcome Preview</div><div id="sow-preview-content" class="preview-content">Hover over a number or select a dropdown to read the full text here...</div></div>
                     <div id="sow-outcomes-loading" class="loading-alert" style="display: none;">Loading...</div>
-                    <div class="grid-scroll-area">
-                        <div class="numbers-grid" id="sow-outcomes-grid"></div>
-                    </div>
+                    <div class="grid-scroll-area"><div class="numbers-grid" id="sow-outcomes-grid"></div></div>
                 </div>
             </div>
-
             <div class="generate-wrapper">
                 <button id="generateSowBtn" class="generate-btn sow-btn" onclick="generateSOW()">Generate Scheme of Work PDF</button>
                 <div id="sow-generate-status" class="generate-status"></div>
             </div>
         </div>
 
-        <!-- ============================================== -->
-        <!-- LESSON PLAN MATRIX                             -->
-        <!-- ============================================== -->
+        <!-- LESSON PLAN MATRIX -->
         <div class="portal-container" id="lesson-plan-section">
             <div class="school-header">
                 <img src="School Bedge-01.png" alt="School Badge">
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
-                
                 <div class="sow-controls-container" dir="rtl">
                     <select id="lp-subject" onchange="loadCurriculum('lp')">
-                        <option value="ISLAM">އިސްލާމް (Islam)</option>
-                        <option value="DHIVEHI">ދިވެހި (Dhivehi)</option>
-                        <option value="QURAN">ޤުރްއާން (Quran)</option>
-                        <option value="ARABIC">ޢަރަބި (Arabic)</option>
-                        <option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
+                        <option value="ISLAM">އިސްލާމް (Islam)</option><option value="DHIVEHI">ދިވެހި (Dhivehi)</option><option value="QURAN">ޤުރްއާން (Quran)</option>
+                        <option value="ARABIC">ޢަރަބި (Arabic)</option><option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
                     </select>
                     <select id="lp-grade" onchange="loadCurriculum('lp')">
                         <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option><option value="4">Grade 4</option>
@@ -160,41 +133,20 @@
                 </div>
                 <h2>Lesson Plan Builder</h2>
             </div>
-            
             <div class="sow-layout"> 
-                <div class="term-col">
-                    <h3 dir="rtl">ފުރަތަމަ ޓާރމް (Term 1)</h3>
-                    <div id="lp-term1-weeks"></div>
-                </div>
-                <div class="term-col">
-                    <h3 dir="rtl">ދެވަނަ ޓާރމް (Term 2)</h3>
-                    <div id="lp-term2-weeks"></div>
-                </div>
-                <div class="outcomes-container">
-                    <h3 dir="rtl">Outcomes</h3>
-                    <div class="preview-box">
-                        <div class="preview-title">Full Outcome Preview</div>
-                        <div id="lp-preview-content" class="preview-content">Hover over a number or select a dropdown to read the full text here...</div>
-                    </div>
+                <div class="term-col"><h3 dir="rtl">ފުރަތަމަ ޓާރމް (Term 1)</h3><div id="lp-term1-weeks"></div></div>
+                <div class="term-col"><h3 dir="rtl">ދެވަނަ ޓާރމް (Term 2)</h3><div id="lp-term2-weeks"></div></div>
+                <div class="outcomes-container"><h3 dir="rtl">Outcomes</h3>
+                    <div class="preview-box"><div class="preview-title">Full Outcome Preview</div><div id="lp-preview-content" class="preview-content">Hover over a number or select a dropdown to read the full text here...</div></div>
                     <div id="lp-outcomes-loading" class="loading-alert" style="display: none;">Loading...</div>
-                    <div class="grid-scroll-area">
-                        <div class="numbers-grid" id="lp-outcomes-grid"></div>
-                    </div>
+                    <div class="grid-scroll-area"><div class="numbers-grid" id="lp-outcomes-grid"></div></div>
                 </div>
             </div>
-
             <div class="generate-wrapper">
-                
-                <!-- NEW: EXPORT SELECTION FOR SINGLE WEEK -->
                 <div class="export-controls" dir="rtl">
                     <label>ޕްރިންޓްކުރާ ހަފްތާ (Export Week):</label>
-                    <select id="export-lp-term">
-                        <option value="T1">ފުރަތަމަ ޓާރމް (Term 1)</option>
-                        <option value="T2">ދެވަނަ ޓާރމް (Term 2)</option>
-                    </select>
-                    <select id="export-lp-week">
-                        <!-- Populated by JS -->
-                    </select>
+                    <select id="export-lp-term"><option value="T1">ފުރަތަމަ ޓާރމް (Term 1)</option><option value="T2">ދެވަނަ ޓާރމް (Term 2)</option></select>
+                    <select id="export-lp-week"></select>
                 </div>
                 <br>
                 <button id="generateLpBtn" class="generate-btn" onclick="generateLessonPlan()">Generate Lesson Plan PDF</button>
@@ -220,23 +172,34 @@
         lpYearDropdown.value = 2026; 
         sowYearDropdown.value = 2026;
 
-        // Populate the export week dropdown (1 to 25)
         const exportLpWeek = document.getElementById('export-lp-week');
         for (let i = 1; i <= 25; i++) {
-            let opt = document.createElement('option');
-            opt.value = `W${i}`;
-            opt.text = `Week ${i}`;
-            exportLpWeek.appendChild(opt);
+            let opt = document.createElement('option'); opt.value = `W${i}`; opt.text = `Week ${i}`; exportLpWeek.appendChild(opt);
         }
 
-        function formatDate(dateString) {
-            if (!dateString) return "";
-            const parts = dateString.split('-');
-            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
-            return dateString;
+        // --- NEW: Custom Date Formatter for "Aug 16 to Aug 22" ---
+        function getFormattedDateRange(startRaw, endRaw) {
+            if (!startRaw && !endRaw) return "";
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            
+            let startStr = "";
+            if (startRaw) {
+                let d1 = new Date(startRaw);
+                if (!isNaN(d1)) startStr = `${months[d1.getMonth()]} ${d1.getDate()}`;
+            }
+            
+            let endStr = "";
+            if (endRaw) {
+                let d2 = new Date(endRaw);
+                if (!isNaN(d2)) endStr = `${months[d2.getMonth()]} ${d2.getDate()}`;
+            }
+
+            if (startStr && endStr) return `${startStr} to ${endStr}`;
+            if (startStr) return startStr;
+            if (endStr) return endStr;
+            return "";
         }
 
-        // 2. Generate the 25 Weeks for SOW
         function generateSowWeekRows() {
             const t1Container = document.getElementById('sow-term1-weeks');
             const t2Container = document.getElementById('sow-term2-weeks');
@@ -248,7 +211,6 @@
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        // 3. Generate the 25 Weeks for LP 
         function generateLpWeekRows() {
             const t1Container = document.getElementById('lp-term1-weeks');
             const t2Container = document.getElementById('lp-term2-weeks');
@@ -263,7 +225,7 @@
                         <input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
                         <span class="date-to" style="margin-left: 5px;">Time:</span>
                         <select class="lp-time-duration" data-term="T1" data-week="W${i}">
-                            <option value="30">30 މިނެޓް</option><option value="35" selected>35 މިނެޓް</option><option value="40">40 މިނެޓް</option><option value="45">45 މިނެޓް</option>
+                            <option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option>
                         </select>
                     </div>
                     <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button></div>
@@ -278,7 +240,7 @@
                         <input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
                         <span class="date-to" style="margin-left: 5px;">Time:</span>
                         <select class="lp-time-duration" data-term="T2" data-week="W${i}">
-                            <option value="30">30 މިނެޓް</option><option value="35" selected>35 މިނެޓް</option><option value="40">40 މިނެޓް</option><option value="45">45 މިނެޓް</option>
+                            <option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option>
                         </select>
                     </div>
                     <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button></div>
@@ -287,7 +249,6 @@
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        // 4. Add/Remove Dropdowns
         function addDropdown(term, week, containerId, prefix) {
             const container = document.getElementById(containerId);
             const row = document.createElement('div'); row.className = 'week-row';
@@ -305,9 +266,6 @@
         }
         function removeDropdown(btn, prefix) { btn.parentElement.remove(); updateTags(prefix); }
 
-        // ==========================================
-        // UNIFIED LOADING LOGIC 
-        // ==========================================
         function syncSelectors(source) {
             const dest = source === 'sow' ? 'lp' : 'sow';
             document.getElementById(`${dest}-subject`).value = document.getElementById(`${source}-subject`).value;
@@ -379,17 +337,12 @@
             });
         }
 
-        // ==========================================
-        // UI INTERACTIONS
-        // ==========================================
         function switchTab(tab) {
             document.getElementById('box-sow').classList.remove('active'); 
             document.getElementById('box-lp').classList.remove('active'); 
             document.getElementById(`box-${tab}`).classList.add('active');
-            
             document.getElementById('lesson-plan-section').style.display = 'none'; 
             document.getElementById('sow-section').style.display = 'none';
-            
             if (tab === 'lp') { document.getElementById('lesson-plan-section').style.display = 'block'; } 
             else if (tab === 'sow') { document.getElementById('sow-section').style.display = 'block'; }
         }
@@ -402,9 +355,7 @@
 
         function updateTags(prefix, changedDropdown) {
             if (changedDropdown && changedDropdown.value !== "") { showPreview(prefix, changedDropdown.value); }
-            
             const sectionId = prefix === 'sow' ? 'sow-section' : 'lesson-plan-section';
-
             document.querySelectorAll(`#${sectionId} .number-item`).forEach(item => { item.classList.remove('selected-t1', 'selected-t2'); });
             document.querySelectorAll(`#${sectionId} .tag-container`).forEach(container => { container.innerHTML = ''; });
 
@@ -420,9 +371,6 @@
             });
         }
 
-        // ==========================================
-        // PDF GENERATION
-        // ==========================================
         function generateSOW() {
             const btn = document.getElementById('generateSowBtn'); const statusDiv = document.getElementById('sow-generate-status');
             btn.disabled = true; btn.innerText = "Generating Scheme of Work PDF... This may take up to 20 seconds"; statusDiv.innerHTML = "";
@@ -451,7 +399,6 @@
             const btn = document.getElementById('generateLpBtn'); 
             const statusDiv = document.getElementById('lp-generate-status');
             
-            // Get the specific Term and Week the user wants to print
             const exportTerm = document.getElementById('export-lp-term').value;
             const exportWeek = document.getElementById('export-lp-week').value;
             
@@ -463,7 +410,6 @@
             let lpData = { T1: {}, T2: {} };
             let hasData = false;
             
-            // Target ONLY the specific week block the user selected
             const groupId = `lp-${exportTerm.toLowerCase()}-${exportWeek.toLowerCase()}`;
             const targetGroup = document.getElementById(groupId);
 
@@ -476,12 +422,13 @@
                         const startDateRaw = targetGroup.querySelector('.lp-date-start').value;
                         const endDateRaw = targetGroup.querySelector('.lp-date-end').value;
                         const timeSelect = targetGroup.querySelector('.lp-time-duration');
-                        const timeValue = timeSelect.options[timeSelect.selectedIndex].text; 
+                        const timeValue = timeSelect.options[timeSelect.selectedIndex].value; // Pulling value directly
 
                         if (!lpData[exportTerm][exportWeek]) { lpData[exportTerm][exportWeek] = []; }
+                        
+                        // Use the new date formatter
                         lpData[exportTerm][exportWeek].push({
-                            startDate: formatDate(startDateRaw),
-                            endDate: formatDate(endDateRaw),
+                            dateString: getFormattedDateRange(startDateRaw, endDateRaw),
                             time: timeValue,
                             outcome: fullText
                         });
@@ -526,7 +473,6 @@
             });
         }
 
-        // Initialize App on Load
         loadCurriculum();
 
     </script>
