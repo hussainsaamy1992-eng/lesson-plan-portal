@@ -62,6 +62,9 @@
         .generate-btn.sow-btn { background-color: #007bff; }
         .generate-btn.sow-btn:hover { background-color: #0056b3; }
         .generate-status { margin-top: 15px; font-weight: bold; color: #0056b3; font-size: 16px; }
+
+        /* Unified Loading Spinner Styling */
+        .loading-alert { text-align: center; font-size: 16px; padding: 20px; border-radius: 8px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -82,19 +85,19 @@
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
                 
                 <div class="sow-controls-container" dir="rtl">
-                    <select id="sow-subject" onchange="loadSowCurriculum()">
+                    <select id="sow-subject" onchange="loadCurriculum('sow')">
                         <option value="ISLAM">އިސްލާމް (Islam)</option>
                         <option value="DHIVEHI">ދިވެހި (Dhivehi)</option>
                         <option value="QURAN">ޤުރްއާން (Quran)</option>
                         <option value="ARABIC">ޢަރަބި (Arabic)</option>
                         <option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
                     </select>
-                    <select id="sow-grade" onchange="loadSowCurriculum()">
+                    <select id="sow-grade" onchange="loadCurriculum('sow')">
                         <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option><option value="4">Grade 4</option>
                         <option value="5">Grade 5</option><option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option>
                         <option value="9">Grade 9</option><option value="10" selected>Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option>
                     </select>
-                    <select id="sow-year"></select>
+                    <select id="sow-year" onchange="loadCurriculum('sow')"></select>
                 </div>
                 <h2>Scheme of Work Matrix</h2>
             </div>
@@ -114,7 +117,7 @@
                         <div class="preview-title">Full Outcome Preview</div>
                         <div id="sow-preview-content" class="preview-content">Hover over a number or select a dropdown to read the full text here...</div>
                     </div>
-                    <div id="sow-outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
+                    <div id="sow-outcomes-loading" class="loading-alert" style="display: none;">Loading...</div>
                     <div class="grid-scroll-area">
                         <div class="numbers-grid" id="sow-outcomes-grid"></div>
                     </div>
@@ -136,19 +139,19 @@
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
                 
                 <div class="sow-controls-container" dir="rtl">
-                    <select id="lp-subject" onchange="loadLpCurriculum()">
+                    <select id="lp-subject" onchange="loadCurriculum('lp')">
                         <option value="ISLAM">އިސްލާމް (Islam)</option>
                         <option value="DHIVEHI">ދިވެހި (Dhivehi)</option>
                         <option value="QURAN">ޤުރްއާން (Quran)</option>
                         <option value="ARABIC">ޢަރަބި (Arabic)</option>
                         <option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
                     </select>
-                    <select id="lp-grade" onchange="loadLpCurriculum()">
+                    <select id="lp-grade" onchange="loadCurriculum('lp')">
                         <option value="1">Grade 1</option><option value="2">Grade 2</option><option value="3">Grade 3</option><option value="4">Grade 4</option>
                         <option value="5">Grade 5</option><option value="6">Grade 6</option><option value="7">Grade 7</option><option value="8">Grade 8</option>
                         <option value="9">Grade 9</option><option value="10" selected>Grade 10</option><option value="11">Grade 11</option><option value="12">Grade 12</option>
                     </select>
-                    <select id="lp-year"></select>
+                    <select id="lp-year" onchange="loadCurriculum('lp')"></select>
                 </div>
                 <h2>Lesson Plan Builder</h2>
             </div>
@@ -168,7 +171,7 @@
                         <div class="preview-title">Full Outcome Preview</div>
                         <div id="lp-preview-content" class="preview-content">Hover over a number or select a dropdown to read the full text here...</div>
                     </div>
-                    <div id="lp-outcomes-loading" style="text-align: center; font-size: 14px;">Loading...</div>
+                    <div id="lp-outcomes-loading" class="loading-alert" style="display: none;">Loading...</div>
                     <div class="grid-scroll-area">
                         <div class="numbers-grid" id="lp-outcomes-grid"></div>
                     </div>
@@ -187,10 +190,7 @@
         // --- CONFIGURATION ---
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbx5Obu8O730P92doHjVupIcxpKg2bs5sg9w5UpqApXA3acYJyT8bZof7B3KSOHG85Kisw/exec';
         
-        let globalSowOutcomes = []; 
-        let globalLpOutcomes = []; 
-        let sowOutcomesLoaded = false;
-        let lpOutcomesLoaded = false;
+        let globalOutcomes = []; // SINGLE array to rule them all!
 
         // 1. Initial Setup for Years 
         const lpYearDropdown = document.getElementById('lp-year');
@@ -202,7 +202,6 @@
         lpYearDropdown.value = 2026; 
         sowYearDropdown.value = 2026;
 
-        // Date Formatter helper (converts YYYY-MM-DD to DD/MM/YYYY)
         function formatDate(dateString) {
             if (!dateString) return "";
             const parts = dateString.split('-');
@@ -216,8 +215,8 @@
             const t2Container = document.getElementById('sow-term2-weeks');
             let t1Html = ''; let t2Html = '';
             for (let i = 1; i <= 25; i++) {
-                t1Html += `<div class="week-group" id="sow-t1-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateSowTags(this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'sow-t1-w${i}', 'sow')">+</button></div></div>`;
-                t2Html += `<div class="week-group" id="sow-t2-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateSowTags(this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'sow-t2-w${i}', 'sow')">+</button></div></div>`;
+                t1Html += `<div class="week-group" id="sow-t1-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'sow-t1-w${i}', 'sow')">+</button></div></div>`;
+                t2Html += `<div class="week-group" id="sow-t2-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'sow-t2-w${i}', 'sow')">+</button></div></div>`;
             }
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
@@ -237,19 +236,10 @@
                         <input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
                         <span class="date-to" style="margin-left: 5px;">Time:</span>
                         <select class="lp-time-duration" data-term="T1" data-week="W${i}">
-                            <option value="30">30 މިނެޓް</option>
-                            <option value="35" selected>35 މިނެޓް</option>
-                            <option value="40">40 މިނެޓް</option>
-                            <option value="45">45 މިނެޓް</option>
+                            <option value="30">30 މިނެޓް</option><option value="35" selected>35 މިނެޓް</option><option value="40">40 މިނެޓް</option><option value="45">45 މިނެޓް</option>
                         </select>
                     </div>
-                    <div class="week-row">
-                        <label>W${i}</label>
-                        <select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateLpTags(this)">
-                            <option value="">-- Select --</option>
-                        </select>
-                        <button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button>
-                    </div>
+                    <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button></div>
                 </div>`;
                 
                 t2Html += `
@@ -261,53 +251,115 @@
                         <input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
                         <span class="date-to" style="margin-left: 5px;">Time:</span>
                         <select class="lp-time-duration" data-term="T2" data-week="W${i}">
-                            <option value="30">30 މިނެޓް</option>
-                            <option value="35" selected>35 މިނެޓް</option>
-                            <option value="40">40 މިނެޓް</option>
-                            <option value="45">45 މިނެޓް</option>
+                            <option value="30">30 މިނެޓް</option><option value="35" selected>35 މިނެޓް</option><option value="40">40 މިނެޓް</option><option value="45">45 މިނެޓް</option>
                         </select>
                     </div>
-                    <div class="week-row">
-                        <label>W${i}</label>
-                        <select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateLpTags(this)">
-                            <option value="">-- Select --</option>
-                        </select>
-                        <button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button>
-                    </div>
+                    <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button></div>
                 </div>`;
             }
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        generateSowWeekRows();
-        generateLpWeekRows();
-
         // 4. Add/Remove Dropdowns
-        function addDropdown(term, week, containerId, type) {
+        function addDropdown(term, week, containerId, prefix) {
             const container = document.getElementById(containerId);
             const row = document.createElement('div'); row.className = 'week-row';
-            
-            let onChangeFunc = type === 'sow' ? 'updateSowTags(this)' : 'updateLpTags(this)';
-            let removeFunc = type === 'sow' ? 'removeSowDropdown(this)' : 'removeLpDropdown(this)';
-            
-            row.innerHTML = `<label></label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="${onChangeFunc}"><option value="">-- Select --</option></select><button class="action-btn remove-btn" title="Remove" onclick="${removeFunc}">×</button>`;
+            row.innerHTML = `<label></label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags('${prefix}', this)"><option value="">-- Select --</option></select><button class="action-btn remove-btn" title="Remove" onclick="removeDropdown(this, '${prefix}')">×</button>`;
             container.appendChild(row);
             
             const select = row.querySelector('select');
-            let outcomesArray = type === 'sow' ? globalSowOutcomes : globalLpOutcomes;
-            
-            if (outcomesArray.length > 0) {
-                outcomesArray.forEach((outcome, index) => {
+            if (globalOutcomes.length > 0) {
+                globalOutcomes.forEach((outcome, index) => {
                     let option = document.createElement('option'); option.value = index; 
                     let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
                     option.text = `${index + 1} - ${shortText}`; select.appendChild(option);
                 });
             }
         }
-        function removeSowDropdown(btn) { btn.parentElement.remove(); updateSowTags(); }
-        function removeLpDropdown(btn) { btn.parentElement.remove(); updateLpTags(); }
+        function removeDropdown(btn, prefix) { btn.parentElement.remove(); updateTags(prefix); }
 
-        // 5. Tab Switching Logic
+        // ==========================================
+        // UNIFIED LOADING LOGIC (Fixes the Bug!)
+        // ==========================================
+
+        function syncSelectors(source) {
+            const dest = source === 'sow' ? 'lp' : 'sow';
+            document.getElementById(`${dest}-subject`).value = document.getElementById(`${source}-subject`).value;
+            document.getElementById(`${dest}-grade`).value = document.getElementById(`${source}-grade`).value;
+            document.getElementById(`${dest}-year`).value = document.getElementById(`${source}-year`).value;
+        }
+
+        function loadCurriculum(source) {
+            if (source) syncSelectors(source);
+
+            // Wipe clean both UIs so old data doesn't sit there
+            generateSowWeekRows();
+            generateLpWeekRows();
+            document.getElementById('sow-outcomes-grid').innerHTML = '';
+            document.getElementById('lp-outcomes-grid').innerHTML = '';
+            document.getElementById('sow-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
+            document.getElementById('lp-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
+
+            fetchOutcomes();
+        }
+
+        function fetchOutcomes() {
+            const subject = document.getElementById('sow-subject').value; 
+            const grade = document.getElementById('sow-grade').value;
+
+            const sowLoad = document.getElementById('sow-outcomes-loading');
+            const lpLoad = document.getElementById('lp-outcomes-loading');
+
+            sowLoad.style.display = 'block'; lpLoad.style.display = 'block';
+            sowLoad.innerHTML = '<b>Connecting to Google Sheets... Please wait.</b>';
+            lpLoad.innerHTML = '<b>Connecting to Google Sheets... Please wait.</b>';
+
+            fetch(`${googleAppScriptUrl}?action=getOutcomes&subject=${subject}&grade=${grade}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        globalOutcomes = data.outcomes; 
+                        populateUI('sow');
+                        populateUI('lp');
+                    } else {
+                        sowLoad.innerHTML = `<b>Error:</b> ${data.error}<br>Please make sure this exact tab exists in your Google Sheet.`;
+                        lpLoad.innerHTML = `<b>Error:</b> ${data.error}<br>Please make sure this exact tab exists in your Google Sheet.`;
+                    }
+                })
+                .catch(error => {
+                    sowLoad.innerHTML = `Failed to connect. Google might be busy. Please refresh the page.`;
+                    lpLoad.innerHTML = `Failed to connect. Google might be busy. Please refresh the page.`;
+                });
+        }
+
+        function populateUI(prefix) {
+            document.getElementById(`${prefix}-outcomes-loading`).style.display = 'none';
+            const gridElement = document.getElementById(`${prefix}-outcomes-grid`);
+            const sectionId = prefix === 'sow' ? 'sow-section' : 'lesson-plan-section';
+            const allDropdowns = document.querySelectorAll(`#${sectionId} .outcome-dropdown`);
+
+            globalOutcomes.forEach((outcome, index) => {
+                let numBox = document.createElement('div');
+                numBox.className = 'number-item';
+                numBox.id = `${prefix}-num-item-${index}`;
+                numBox.onmouseover = function() { showPreview(prefix, index); };
+                numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="${prefix}-tag-container-${index}"></div>`;
+                gridElement.appendChild(numBox);
+
+                allDropdowns.forEach(dropdown => {
+                    let option = document.createElement('option');
+                    option.value = index;
+                    let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
+                    option.text = `${index + 1} - ${shortText}`;
+                    dropdown.appendChild(option);
+                });
+            });
+        }
+
+        // ==========================================
+        // UI INTERACTIONS
+        // ==========================================
+
         function switchTab(tab) {
             document.getElementById('box-sow').classList.remove('active'); 
             document.getElementById('box-lp').classList.remove('active'); 
@@ -316,61 +368,28 @@
             document.getElementById('lesson-plan-section').style.display = 'none'; 
             document.getElementById('sow-section').style.display = 'none';
             
-            if (tab === 'lp') { 
-                document.getElementById('lesson-plan-section').style.display = 'block'; 
-                if (!lpOutcomesLoaded) { loadLpCurriculum(); lpOutcomesLoaded = true; }
-            } else if (tab === 'sow') { 
-                document.getElementById('sow-section').style.display = 'block'; 
-                if (!sowOutcomesLoaded) { loadSowCurriculum(); sowOutcomesLoaded = true; } 
-            }
+            if (tab === 'lp') { document.getElementById('lesson-plan-section').style.display = 'block'; } 
+            else if (tab === 'sow') { document.getElementById('sow-section').style.display = 'block'; }
         }
 
-        // ==========================================
-        // SCHEME OF WORK SPECIFIC LOGIC
-        // ==========================================
-        function loadSowCurriculum() {
-            generateSowWeekRows(); 
-            document.getElementById('sow-outcomes-grid').innerHTML = ''; 
-            document.getElementById('sow-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...'; 
-            fetchSowOutcomes();
+        function showPreview(prefix, index) {
+            const previewBox = document.getElementById(`${prefix}-preview-content`); 
+            previewBox.style.color = '#000'; 
+            previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index]}`;
         }
 
-        function fetchSowOutcomes() {
-            document.getElementById('sow-outcomes-loading').style.display = 'block'; 
-            const subject = document.getElementById('sow-subject').value; const grade = document.getElementById('sow-grade').value;
-            fetch(`${googleAppScriptUrl}?action=getOutcomes&subject=${subject}&grade=${grade}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('sow-outcomes-loading').style.display = 'none'; const gridElement = document.getElementById('sow-outcomes-grid'); const allDropdowns = document.querySelectorAll('#sow-section .outcome-dropdown');
-                    if (data.success) {
-                        globalSowOutcomes = data.outcomes; 
-                        data.outcomes.forEach((outcome, index) => {
-                            let numBox = document.createElement('div'); numBox.className = 'number-item'; numBox.id = `sow-num-item-${index}`; 
-                            numBox.onmouseover = function() { showSowPreview(index); };
-                            numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="sow-tag-container-${index}"></div>`; gridElement.appendChild(numBox);
-                            allDropdowns.forEach(dropdown => {
-                                let option = document.createElement('option'); option.value = index; 
-                                let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
-                                option.text = `${index + 1} - ${shortText}`; dropdown.appendChild(option);
-                            });
-                        });
-                    } else { gridElement.innerHTML = `<span style="color: red;">${data.error}</span>`; }
-                }).catch(error => { document.getElementById('sow-outcomes-loading').innerText = "Failed to load outcomes."; });
-        }
+        function updateTags(prefix, changedDropdown) {
+            if (changedDropdown && changedDropdown.value !== "") { showPreview(prefix, changedDropdown.value); }
+            
+            const sectionId = prefix === 'sow' ? 'sow-section' : 'lesson-plan-section';
 
-        function showSowPreview(index) {
-            const previewBox = document.getElementById('sow-preview-content'); previewBox.style.color = '#000'; previewBox.innerText = `${parseInt(index) + 1} - ${globalSowOutcomes[index]}`;
-        }
+            document.querySelectorAll(`#${sectionId} .number-item`).forEach(item => { item.classList.remove('selected-t1', 'selected-t2'); });
+            document.querySelectorAll(`#${sectionId} .tag-container`).forEach(container => { container.innerHTML = ''; });
 
-        function updateSowTags(changedDropdown) {
-            if (changedDropdown && changedDropdown.value !== "") { showSowPreview(changedDropdown.value); }
-            document.querySelectorAll('#sow-section .number-item').forEach(item => { item.classList.remove('selected-t1', 'selected-t2'); });
-            document.querySelectorAll('#sow-section .tag-container').forEach(container => { container.innerHTML = ''; });
-
-            document.querySelectorAll('#sow-section .outcome-dropdown').forEach(dropdown => {
+            document.querySelectorAll(`#${sectionId} .outcome-dropdown`).forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value; const week = dropdown.getAttribute('data-week'); const term = dropdown.getAttribute('data-term'); const shortcutText = `(${week},${term})`; 
-                    const targetBox = document.getElementById(`sow-num-item-${selectedIndex}`); const targetTagContainer = document.getElementById(`sow-tag-container-${selectedIndex}`);
+                    const targetBox = document.getElementById(`${prefix}-num-item-${selectedIndex}`); const targetTagContainer = document.getElementById(`${prefix}-tag-container-${selectedIndex}`);
                     if (targetBox && targetTagContainer) {
                         if (term === 'T1') { targetBox.classList.add('selected-t1'); } else if (term === 'T2') { targetBox.classList.add('selected-t2'); }
                         const tag = document.createElement('span'); tag.className = 'shortcut-tag'; tag.innerText = shortcutText; targetTagContainer.appendChild(tag);
@@ -378,6 +397,10 @@
                 }
             });
         }
+
+        // ==========================================
+        // PDF GENERATION
+        // ==========================================
 
         function generateSOW() {
             const btn = document.getElementById('generateSowBtn'); const statusDiv = document.getElementById('sow-generate-status');
@@ -388,7 +411,7 @@
             document.querySelectorAll('#sow-section .outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const term = dropdown.getAttribute('data-term'); const week = dropdown.getAttribute('data-week');
-                    const index = dropdown.value; const fullText = globalSowOutcomes[index]; 
+                    const index = dropdown.value; const fullText = globalOutcomes[index]; 
                     if (!sowData[term][week]) { sowData[term][week] = []; }
                     sowData[term][week].push(fullText);
                 }
@@ -399,60 +422,6 @@
                 btn.disabled = false; btn.innerText = "Generate Scheme of Work PDF";
             }).catch(error => {
                 statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server.</span>`; btn.disabled = false; btn.innerText = "Generate Scheme of Work PDF";
-            });
-        }
-
-        // ==========================================
-        // LESSON PLAN SPECIFIC LOGIC
-        // ==========================================
-        function loadLpCurriculum() {
-            generateLpWeekRows(); 
-            document.getElementById('lp-outcomes-grid').innerHTML = ''; 
-            document.getElementById('lp-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...'; 
-            fetchLpOutcomes();
-        }
-
-        function fetchLpOutcomes() {
-            document.getElementById('lp-outcomes-loading').style.display = 'block'; 
-            const subject = document.getElementById('lp-subject').value; const grade = document.getElementById('lp-grade').value;
-            fetch(`${googleAppScriptUrl}?action=getOutcomes&subject=${subject}&grade=${grade}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('lp-outcomes-loading').style.display = 'none'; const gridElement = document.getElementById('lp-outcomes-grid'); const allDropdowns = document.querySelectorAll('#lesson-plan-section .outcome-dropdown');
-                    if (data.success) {
-                        globalLpOutcomes = data.outcomes; 
-                        data.outcomes.forEach((outcome, index) => {
-                            let numBox = document.createElement('div'); numBox.className = 'number-item'; numBox.id = `lp-num-item-${index}`; 
-                            numBox.onmouseover = function() { showLpPreview(index); };
-                            numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="lp-tag-container-${index}"></div>`; gridElement.appendChild(numBox);
-                            allDropdowns.forEach(dropdown => {
-                                let option = document.createElement('option'); option.value = index; 
-                                let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
-                                option.text = `${index + 1} - ${shortText}`; dropdown.appendChild(option);
-                            });
-                        });
-                    } else { gridElement.innerHTML = `<span style="color: red;">${data.error}</span>`; }
-                }).catch(error => { document.getElementById('lp-outcomes-loading').innerText = "Failed to load outcomes."; });
-        }
-
-        function showLpPreview(index) {
-            const previewBox = document.getElementById('lp-preview-content'); previewBox.style.color = '#000'; previewBox.innerText = `${parseInt(index) + 1} - ${globalLpOutcomes[index]}`;
-        }
-
-        function updateLpTags(changedDropdown) {
-            if (changedDropdown && changedDropdown.value !== "") { showLpPreview(changedDropdown.value); }
-            document.querySelectorAll('#lesson-plan-section .number-item').forEach(item => { item.classList.remove('selected-t1', 'selected-t2'); });
-            document.querySelectorAll('#lesson-plan-section .tag-container').forEach(container => { container.innerHTML = ''; });
-
-            document.querySelectorAll('#lesson-plan-section .outcome-dropdown').forEach(dropdown => {
-                if (dropdown.value !== "") {
-                    const selectedIndex = dropdown.value; const week = dropdown.getAttribute('data-week'); const term = dropdown.getAttribute('data-term'); const shortcutText = `(${week},${term})`; 
-                    const targetBox = document.getElementById(`lp-num-item-${selectedIndex}`); const targetTagContainer = document.getElementById(`lp-tag-container-${selectedIndex}`);
-                    if (targetBox && targetTagContainer) {
-                        if (term === 'T1') { targetBox.classList.add('selected-t1'); } else if (term === 'T2') { targetBox.classList.add('selected-t2'); }
-                        const tag = document.createElement('span'); tag.className = 'shortcut-tag'; tag.innerText = shortcutText; targetTagContainer.appendChild(tag);
-                    }
-                }
             });
         }
 
@@ -469,7 +438,6 @@
             const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; 
             const grade = document.getElementById('lp-grade').value;
 
-            // Gather all the selected outcomes from the LP dropdowns
             let lpData = { T1: {}, T2: {} };
             
             document.querySelectorAll('#lesson-plan-section .outcome-dropdown').forEach(dropdown => {
@@ -477,15 +445,13 @@
                     const term = dropdown.getAttribute('data-term'); 
                     const week = dropdown.getAttribute('data-week');
                     const index = dropdown.value; 
-                    const fullText = globalLpOutcomes[index]; 
+                    const fullText = globalOutcomes[index]; 
 
-                    // Grab the sibling date and time elements
                     const group = dropdown.closest('.week-group');
                     const startDateRaw = group.querySelector('.lp-date-start').value;
                     const endDateRaw = group.querySelector('.lp-date-end').value;
-                    const timeValue = group.querySelector('.lp-time-duration').value;
+                    const timeValue = group.querySelector('.lp-time-duration').options[group.querySelector('.lp-time-duration').selectedIndex].text; // Grab the Dhivehi text exactly
 
-                    // Push as an object with full details
                     if (!lpData[term][week]) { lpData[term][week] = []; }
                     lpData[term][week].push({
                         startDate: formatDate(startDateRaw),
@@ -522,8 +488,8 @@
             });
         }
 
-        // Initialize SOW tab automatically on page load
-        switchTab('sow');
+        // Initialize App on Load
+        loadCurriculum();
 
     </script>
 </body>
