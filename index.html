@@ -186,22 +186,49 @@
             return "";
         }
 
-        // --- SCHEME OF WORK UI (Unchanged) ---
         function generateSowWeekRows() {
             const t1Container = document.getElementById('sow-term1-weeks');
             const t2Container = document.getElementById('sow-term2-weeks');
             let t1Html = ''; let t2Html = '';
             for (let i = 1; i <= 25; i++) {
-                t1Html += `<div class="week-group" id="sow-t1-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addSowDropdown('T1', 'W${i}', 'sow-t1-w${i}')">+</button></div></div>`;
-                t2Html += `<div class="week-group" id="sow-t2-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addSowDropdown('T2', 'W${i}', 'sow-t2-w${i}')">+</button></div></div>`;
+                t1Html += `<div class="week-group" id="sow-t1-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'sow-t1-w${i}', 'sow')">+</button></div></div>`;
+                t2Html += `<div class="week-group" id="sow-t2-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'sow-t2-w${i}', 'sow')">+</button></div></div>`;
             }
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        function addSowDropdown(term, week, containerId) {
+        function generateLpWeekRows() {
+            const t1Container = document.getElementById('lp-term1-weeks');
+            const t2Container = document.getElementById('lp-term2-weeks');
+            let t1Html = ''; let t2Html = '';
+            for (let i = 1; i <= 25; i++) {
+                t1Html += `
+                <div class="week-group" id="lp-t1-w${i}">
+                    <div class="date-picker-row" dir="ltr">
+                        <span class="date-label">Dates:</span><input type="date" class="lp-date-start" data-term="T1" data-week="W${i}"><span class="date-to">to</span><input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
+                        <span class="date-to" style="margin-left: 5px;">Time:</span>
+                        <select class="lp-time-duration" data-term="T1" data-week="W${i}"><option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option></select>
+                    </div>
+                    <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button></div>
+                </div>`;
+                
+                t2Html += `
+                <div class="week-group" id="lp-t2-w${i}">
+                    <div class="date-picker-row" dir="ltr">
+                        <span class="date-label">Dates:</span><input type="date" class="lp-date-start" data-term="T2" data-week="W${i}"><span class="date-to">to</span><input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
+                        <span class="date-to" style="margin-left: 5px;">Time:</span>
+                        <select class="lp-time-duration" data-term="T2" data-week="W${i}"><option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option></select>
+                    </div>
+                    <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button></div>
+                </div>`;
+            }
+            t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
+        }
+
+        function addDropdown(term, week, containerId, prefix) {
             const container = document.getElementById(containerId);
             const row = document.createElement('div'); row.className = 'week-row';
-            row.innerHTML = `<label></label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags('sow', this)"><option value="">-- Select --</option></select><button class="action-btn remove-btn" title="Remove" onclick="removeSowDropdown(this)">×</button>`;
+            row.innerHTML = `<label></label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags('${prefix}', this)"><option value="">-- Select --</option></select><button class="action-btn remove-btn" title="Remove" onclick="removeDropdown(this, '${prefix}')">×</button>`;
             container.appendChild(row);
             const select = row.querySelector('select');
             if (globalOutcomes.length > 0) {
@@ -212,106 +239,7 @@
                 });
             }
         }
-        function removeSowDropdown(btn) { btn.parentElement.remove(); updateTags('sow'); }
-
-        // --- LESSON PLAN UI (NEW: Multiple Periods per Week) ---
-        function generateLpWeekRows() {
-            const t1Container = document.getElementById('lp-term1-weeks');
-            const t2Container = document.getElementById('lp-term2-weeks');
-            let t1Html = ''; let t2Html = '';
-            for (let i = 1; i <= 25; i++) {
-                t1Html += `
-                <div class="week-group" id="lp-t1-w${i}">
-                    <div class="periods-container">
-                        <div class="period-block" style="margin-bottom: 10px; border-bottom: 2px dashed #ccc; padding-bottom: 10px;">
-                            <div class="date-picker-row" dir="ltr" style="background-color:#f1f3f5;">
-                                <span class="date-label">Period 1 Dates:</span><input type="date" class="lp-date-start" data-term="T1" data-week="W${i}"><span class="date-to">to</span><input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
-                                <span class="date-to" style="margin-left: 5px;">Time:</span>
-                                <select class="lp-time-duration" data-term="T1" data-week="W${i}"><option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option></select>
-                            </div>
-                            <div class="outcomes-wrapper">
-                                <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome TO THIS PERIOD" onclick="addLpOutcomeDropdown(this, 'T1', 'W${i}')">+</button></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="add-period-btn" onclick="addLpPeriod('lp-t1-w${i}', 'T1', 'W${i}')" style="font-size:12px; padding:5px 10px; cursor:pointer; background:#1e4a79; color:#fff; border:none; border-radius:4px;">+ Add Another Period to Week ${i}</button>
-                </div>`;
-                
-                t2Html += `
-                <div class="week-group" id="lp-t2-w${i}">
-                    <div class="periods-container">
-                        <div class="period-block" style="margin-bottom: 10px; border-bottom: 2px dashed #ccc; padding-bottom: 10px;">
-                            <div class="date-picker-row" dir="ltr" style="background-color:#f1f3f5;">
-                                <span class="date-label">Period 1 Dates:</span><input type="date" class="lp-date-start" data-term="T2" data-week="W${i}"><span class="date-to">to</span><input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
-                                <span class="date-to" style="margin-left: 5px;">Time:</span>
-                                <select class="lp-time-duration" data-term="T2" data-week="W${i}"><option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option></select>
-                            </div>
-                            <div class="outcomes-wrapper">
-                                <div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome TO THIS PERIOD" onclick="addLpOutcomeDropdown(this, 'T2', 'W${i}')">+</button></div>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="add-period-btn" onclick="addLpPeriod('lp-t2-w${i}', 'T2', 'W${i}')" style="font-size:12px; padding:5px 10px; cursor:pointer; background:#1e4a79; color:#fff; border:none; border-radius:4px;">+ Add Another Period to Week ${i}</button>
-                </div>`;
-            }
-            t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
-        }
-
-        // Adds an outcome DROPDOWN to an EXISTING Period
-        function addLpOutcomeDropdown(btn, term, week) {
-            const wrapper = btn.closest('.outcomes-wrapper');
-            const row = document.createElement('div'); row.className = 'week-row';
-            row.innerHTML = `<label></label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn remove-btn" title="Remove Outcome" onclick="removeLpOutcome(this)">×</button>`;
-            wrapper.appendChild(row);
-            
-            const select = row.querySelector('select');
-            if (globalOutcomes.length > 0) {
-                globalOutcomes.forEach((outcome, index) => {
-                    let option = document.createElement('option'); option.value = index; 
-                    let shortText = outcome.text.length > 55 ? outcome.text.substring(0, 55) + "..." : outcome.text;
-                    option.text = `${index + 1} - ${shortText}`; select.appendChild(option);
-                });
-            }
-        }
-        function removeLpOutcome(btn) { btn.parentElement.remove(); updateTags('lp'); }
-
-        // Adds a completely NEW Period Block to the Week
-        function addLpPeriod(groupId, term, week) {
-            const group = document.getElementById(groupId);
-            const container = group.querySelector('.periods-container');
-            const periodCount = container.querySelectorAll('.period-block').length + 1;
-            
-            const block = document.createElement('div');
-            block.className = 'period-block';
-            block.style = 'margin-bottom: 10px; border-bottom: 2px dashed #ccc; padding-bottom: 10px; margin-top: 10px;';
-            block.innerHTML = `
-                <div class="date-picker-row" dir="ltr" style="background-color:#f1f3f5;">
-                    <span class="date-label">Period ${periodCount} Dates:</span>
-                    <input type="date" class="lp-date-start" data-term="${term}" data-week="${week}">
-                    <span class="date-to">to</span>
-                    <input type="date" class="lp-date-end" data-term="${term}" data-week="${week}">
-                    <span class="date-to" style="margin-left: 5px;">Time:</span>
-                    <select class="lp-time-duration" data-term="${term}" data-week="${week}">
-                        <option value="30 މިނެޓް">30 މިނެޓް</option><option value="35 މިނެޓް" selected>35 މިނެޓް</option><option value="40 މިނެޓް">40 މިނެޓް</option><option value="45 މިނެޓް">45 މިނެޓް</option>
-                    </select>
-                    <button class="action-btn remove-btn" style="margin-left:auto; width:22px; height:22px; font-size:12px;" title="Delete this whole Period" onclick="this.closest('.period-block').remove(); updateTags('lp');">×</button>
-                </div>
-                <div class="outcomes-wrapper">
-                    <div class="week-row"><label>${week}</label><select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags('lp', this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome TO THIS PERIOD" onclick="addLpOutcomeDropdown(this, '${term}', '${week}')">+</button></div>
-                </div>
-            `;
-            container.appendChild(block);
-            
-            const select = block.querySelector('select');
-            if (globalOutcomes.length > 0) {
-                globalOutcomes.forEach((outcome, index) => {
-                    let option = document.createElement('option'); option.value = index; 
-                    let shortText = outcome.text.length > 55 ? outcome.text.substring(0, 55) + "..." : outcome.text;
-                    option.text = `${index + 1} - ${shortText}`; select.appendChild(option);
-                });
-            }
-        }
-
+        function removeDropdown(btn, prefix) { btn.parentElement.remove(); updateTags(prefix); }
 
         function syncSelectors(source) {
             const dest = source === 'sow' ? 'lp' : 'sow';
@@ -435,20 +363,12 @@
             const targetGroup = document.getElementById(groupId);
 
             if (targetGroup) {
-                // Loop through PERIOD BLOCKS instead of individual dropdowns
-                targetGroup.querySelectorAll('.period-block').forEach(periodBlock => {
-                    let periodOutcomes = [];
-                    
-                    periodBlock.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
-                        if (dropdown.value !== "") {
-                            periodOutcomes.push(globalOutcomes[dropdown.value]);
-                        }
-                    });
-
-                    if (periodOutcomes.length > 0) {
-                        const startDateRaw = periodBlock.querySelector('.lp-date-start').value;
-                        const endDateRaw = periodBlock.querySelector('.lp-date-end').value;
-                        const timeSelect = periodBlock.querySelector('.lp-time-duration');
+                targetGroup.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
+                    if (dropdown.value !== "") {
+                        const index = dropdown.value; const fullObj = globalOutcomes[index]; 
+                        const startDateRaw = targetGroup.querySelector('.lp-date-start').value;
+                        const endDateRaw = targetGroup.querySelector('.lp-date-end').value;
+                        const timeSelect = targetGroup.querySelector('.lp-time-duration');
                         const timeValue = timeSelect.options[timeSelect.selectedIndex].value; 
 
                         if (!lpData[exportTerm][exportWeek]) { lpData[exportTerm][exportWeek] = []; }
@@ -456,7 +376,10 @@
                         lpData[exportTerm][exportWeek].push({
                             dateString: getFormattedDateRange(startDateRaw, endDateRaw),
                             time: timeValue,
-                            outcomes: periodOutcomes // Send the grouped array!
+                            outcome: fullObj.text,
+                            strand: fullObj.strand,
+                            substrand: fullObj.substrand,
+                            indicators: fullObj.indicators
                         });
                         hasData = true;
                     }
