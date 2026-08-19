@@ -177,7 +177,7 @@
             let opt = document.createElement('option'); opt.value = `W${i}`; opt.text = `Week ${i}`; exportLpWeek.appendChild(opt);
         }
 
-        // --- NEW: Custom Date Formatter ("Aug 16 - Aug 22") ---
+        // Date Formatter ("Aug 16 - Aug 22")
         function getFormattedDateRange(startRaw, endRaw) {
             if (!startRaw && !endRaw) return "";
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -194,7 +194,6 @@
                 if (!isNaN(d2)) endStr = `${months[d2.getMonth()]} ${d2.getDate()}`;
             }
 
-            // Using dash instead of 'to'
             if (startStr && endStr) return `${startStr} - ${endStr}`;
             if (startStr) return startStr;
             if (endStr) return endStr;
@@ -260,7 +259,7 @@
             if (globalOutcomes.length > 0) {
                 globalOutcomes.forEach((outcome, index) => {
                     let option = document.createElement('option'); option.value = index; 
-                    let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
+                    let shortText = outcome.text.length > 55 ? outcome.text.substring(0, 55) + "..." : outcome.text;
                     option.text = `${index + 1} - ${shortText}`; select.appendChild(option);
                 });
             }
@@ -320,7 +319,7 @@
             const sectionId = prefix === 'sow' ? 'sow-section' : 'lesson-plan-section';
             const allDropdowns = document.querySelectorAll(`#${sectionId} .outcome-dropdown`);
 
-            globalOutcomes.forEach((outcome, index) => {
+            globalOutcomes.forEach((outcomeObj, index) => {
                 let numBox = document.createElement('div');
                 numBox.className = 'number-item';
                 numBox.id = `${prefix}-num-item-${index}`;
@@ -331,7 +330,7 @@
                 allDropdowns.forEach(dropdown => {
                     let option = document.createElement('option');
                     option.value = index;
-                    let shortText = outcome.length > 55 ? outcome.substring(0, 55) + "..." : outcome;
+                    let shortText = outcomeObj.text.length > 55 ? outcomeObj.text.substring(0, 55) + "..." : outcomeObj.text;
                     option.text = `${index + 1} - ${shortText}`;
                     dropdown.appendChild(option);
                 });
@@ -351,7 +350,7 @@
         function showPreview(prefix, index) {
             const previewBox = document.getElementById(`${prefix}-preview-content`); 
             previewBox.style.color = '#000'; 
-            previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index]}`;
+            previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index].text}`;
         }
 
         function updateTags(prefix, changedDropdown) {
@@ -382,7 +381,7 @@
             document.querySelectorAll('#sow-section .outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const term = dropdown.getAttribute('data-term'); const week = dropdown.getAttribute('data-week');
-                    const index = dropdown.value; const fullText = globalOutcomes[index]; 
+                    const index = dropdown.value; const fullText = globalOutcomes[index].text; 
                     if (!sowData[term][week]) { sowData[term][week] = []; }
                     sowData[term][week].push(fullText);
                 }
@@ -418,7 +417,7 @@
                 targetGroup.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                     if (dropdown.value !== "") {
                         const index = dropdown.value; 
-                        const fullText = globalOutcomes[index]; 
+                        const fullObj = globalOutcomes[index]; 
 
                         const startDateRaw = targetGroup.querySelector('.lp-date-start').value;
                         const endDateRaw = targetGroup.querySelector('.lp-date-end').value;
@@ -430,7 +429,9 @@
                         lpData[exportTerm][exportWeek].push({
                             dateString: getFormattedDateRange(startDateRaw, endDateRaw),
                             time: timeValue,
-                            outcome: fullText
+                            outcome: fullObj.text,
+                            strand: fullObj.strand,
+                            substrand: fullObj.substrand
                         });
                         
                         hasData = true;
