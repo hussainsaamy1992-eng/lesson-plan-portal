@@ -57,13 +57,18 @@
         .shortcut-tag { font-size: 10px; font-weight: normal; margin-top: 4px; display: block; }
 
         .generate-wrapper { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 2px solid #ddd; }
+        
+        /* NEW: Export Selection Styling */
+        .export-controls { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px; background: #e9ecef; padding: 10px; border-radius: 6px; display: inline-flex; }
+        .export-controls label { font-weight: bold; color: #333; }
+        .export-controls select { padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px; font-weight: bold; direction: rtl; }
+
         .generate-btn { padding: 15px 30px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 18px; font-weight: bold; cursor: pointer; max-width: 400px; width: 100%; transition: 0.3s; }
         .generate-btn:hover { background-color: #218838; }
         .generate-btn.sow-btn { background-color: #007bff; }
         .generate-btn.sow-btn:hover { background-color: #0056b3; }
         .generate-status { margin-top: 15px; font-weight: bold; color: #0056b3; font-size: 16px; }
 
-        /* Unified Loading Spinner Styling */
         .loading-alert { text-align: center; font-size: 16px; padding: 20px; border-radius: 8px; background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; margin-bottom: 15px; }
     </style>
 </head>
@@ -179,6 +184,19 @@
             </div>
 
             <div class="generate-wrapper">
+                
+                <!-- NEW: EXPORT SELECTION FOR SINGLE WEEK -->
+                <div class="export-controls" dir="rtl">
+                    <label>ޕްރިންޓްކުރާ ހަފްތާ (Export Week):</label>
+                    <select id="export-lp-term">
+                        <option value="T1">ފުރަތަމަ ޓާރމް (Term 1)</option>
+                        <option value="T2">ދެވަނަ ޓާރމް (Term 2)</option>
+                    </select>
+                    <select id="export-lp-week">
+                        <!-- Populated by JS -->
+                    </select>
+                </div>
+                <br>
                 <button id="generateLpBtn" class="generate-btn" onclick="generateLessonPlan()">Generate Lesson Plan PDF</button>
                 <div id="lp-generate-status" class="generate-status"></div>
             </div>
@@ -190,9 +208,9 @@
         // --- CONFIGURATION ---
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbx5Obu8O730P92doHjVupIcxpKg2bs5sg9w5UpqApXA3acYJyT8bZof7B3KSOHG85Kisw/exec';
         
-        let globalOutcomes = []; // SINGLE array to rule them all!
+        let globalOutcomes = []; 
 
-        // 1. Initial Setup for Years 
+        // 1. Initial Setup for Years & Weeks
         const lpYearDropdown = document.getElementById('lp-year');
         const sowYearDropdown = document.getElementById('sow-year');
         for (let i = 2024; i <= 2050; i++) {
@@ -201,6 +219,15 @@
         }
         lpYearDropdown.value = 2026; 
         sowYearDropdown.value = 2026;
+
+        // Populate the export week dropdown (1 to 25)
+        const exportLpWeek = document.getElementById('export-lp-week');
+        for (let i = 1; i <= 25; i++) {
+            let opt = document.createElement('option');
+            opt.value = `W${i}`;
+            opt.text = `Week ${i}`;
+            exportLpWeek.appendChild(opt);
+        }
 
         function formatDate(dateString) {
             if (!dateString) return "";
@@ -279,9 +306,8 @@
         function removeDropdown(btn, prefix) { btn.parentElement.remove(); updateTags(prefix); }
 
         // ==========================================
-        // UNIFIED LOADING LOGIC (Fixes the Bug!)
+        // UNIFIED LOADING LOGIC 
         // ==========================================
-
         function syncSelectors(source) {
             const dest = source === 'sow' ? 'lp' : 'sow';
             document.getElementById(`${dest}-subject`).value = document.getElementById(`${source}-subject`).value;
@@ -291,15 +317,12 @@
 
         function loadCurriculum(source) {
             if (source) syncSelectors(source);
-
-            // Wipe clean both UIs so old data doesn't sit there
             generateSowWeekRows();
             generateLpWeekRows();
             document.getElementById('sow-outcomes-grid').innerHTML = '';
             document.getElementById('lp-outcomes-grid').innerHTML = '';
             document.getElementById('sow-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
             document.getElementById('lp-preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
-
             fetchOutcomes();
         }
 
@@ -359,7 +382,6 @@
         // ==========================================
         // UI INTERACTIONS
         // ==========================================
-
         function switchTab(tab) {
             document.getElementById('box-sow').classList.remove('active'); 
             document.getElementById('box-lp').classList.remove('active'); 
@@ -401,12 +423,12 @@
         // ==========================================
         // PDF GENERATION
         // ==========================================
-
         function generateSOW() {
             const btn = document.getElementById('generateSowBtn'); const statusDiv = document.getElementById('sow-generate-status');
             btn.disabled = true; btn.innerText = "Generating Scheme of Work PDF... This may take up to 20 seconds"; statusDiv.innerHTML = "";
             const year = document.getElementById('sow-year').value; const subjectSelect = document.getElementById('sow-subject');
             const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; const grade = document.getElementById('sow-grade').value;
+            
             let sowData = { T1: {}, T2: {} };
             document.querySelectorAll('#sow-section .outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
@@ -429,38 +451,54 @@
             const btn = document.getElementById('generateLpBtn'); 
             const statusDiv = document.getElementById('lp-generate-status');
             
-            btn.disabled = true; 
-            btn.innerText = "Generating Lesson Plan PDF... Please wait"; 
-            statusDiv.innerHTML = "";
-
+            // Get the specific Term and Week the user wants to print
+            const exportTerm = document.getElementById('export-lp-term').value;
+            const exportWeek = document.getElementById('export-lp-week').value;
+            
             const year = document.getElementById('lp-year').value; 
             const subjectSelect = document.getElementById('lp-subject');
             const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; 
             const grade = document.getElementById('lp-grade').value;
 
             let lpData = { T1: {}, T2: {} };
+            let hasData = false;
             
-            document.querySelectorAll('#lesson-plan-section .outcome-dropdown').forEach(dropdown => {
-                if (dropdown.value !== "") {
-                    const term = dropdown.getAttribute('data-term'); 
-                    const week = dropdown.getAttribute('data-week');
-                    const index = dropdown.value; 
-                    const fullText = globalOutcomes[index]; 
+            // Target ONLY the specific week block the user selected
+            const groupId = `lp-${exportTerm.toLowerCase()}-${exportWeek.toLowerCase()}`;
+            const targetGroup = document.getElementById(groupId);
 
-                    const group = dropdown.closest('.week-group');
-                    const startDateRaw = group.querySelector('.lp-date-start').value;
-                    const endDateRaw = group.querySelector('.lp-date-end').value;
-                    const timeValue = group.querySelector('.lp-time-duration').options[group.querySelector('.lp-time-duration').selectedIndex].text; // Grab the Dhivehi text exactly
+            if (targetGroup) {
+                targetGroup.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
+                    if (dropdown.value !== "") {
+                        const index = dropdown.value; 
+                        const fullText = globalOutcomes[index]; 
 
-                    if (!lpData[term][week]) { lpData[term][week] = []; }
-                    lpData[term][week].push({
-                        startDate: formatDate(startDateRaw),
-                        endDate: formatDate(endDateRaw),
-                        time: timeValue,
-                        outcome: fullText
-                    });
-                }
-            });
+                        const startDateRaw = targetGroup.querySelector('.lp-date-start').value;
+                        const endDateRaw = targetGroup.querySelector('.lp-date-end').value;
+                        const timeSelect = targetGroup.querySelector('.lp-time-duration');
+                        const timeValue = timeSelect.options[timeSelect.selectedIndex].text; 
+
+                        if (!lpData[exportTerm][exportWeek]) { lpData[exportTerm][exportWeek] = []; }
+                        lpData[exportTerm][exportWeek].push({
+                            startDate: formatDate(startDateRaw),
+                            endDate: formatDate(endDateRaw),
+                            time: timeValue,
+                            outcome: fullText
+                        });
+                        
+                        hasData = true;
+                    }
+                });
+            }
+
+            if (!hasData) {
+                statusDiv.innerHTML = `<span style="color: red;">Error: No outcomes have been selected for ${exportTerm} ${exportWeek}. Please select at least one outcome.</span>`;
+                return;
+            }
+
+            btn.disabled = true; 
+            btn.innerText = "Generating Lesson Plan PDF... Please wait"; 
+            statusDiv.innerHTML = "";
 
             const payload = {
                 action: 'generateLP',
