@@ -48,7 +48,6 @@
             align-items: flex-start;
         }
         
-        /* Containers */
         .portal-container {
             background: white;
             width: 100%;
@@ -67,15 +66,18 @@
         .school-header h1 { font-size: 22px; margin: 5px 0; color: #000; }
         .school-header h2 { font-size: 18px; margin: 5px 0; color: #000; }
 
-        /* NEW SOW Year Dropdown Styling */
-        .sow-year-container {
-            margin: 10px auto;
-            max-width: 150px;
+        /* NEW: Subject, Grade, Year Controls Layout */
+        .sow-controls-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 10px auto 20px auto;
+            max-width: 650px;
         }
-        .sow-year-container select {
-            width: 100%;
+        .sow-controls-container select {
+            flex: 1;
             padding: 8px;
-            font-size: 16px;
+            font-size: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
             text-align: center;
@@ -223,24 +225,14 @@
         
         .number-item:hover { background-color: #d3d9df; }
 
-        /* --- COLOR CODING STYLES --- */
         .number-item.selected-t1 {
-            background: #dc3545; /* Red for Term 1 */
-            color: white;
-            border-color: #dc3545;
+            background: #dc3545; color: white; border-color: #dc3545;
         }
-
         .number-item.selected-t2 {
-            background: #28a745; /* Green for Term 2 */
-            color: white;
-            border-color: #28a745;
+            background: #28a745; color: white; border-color: #28a745;
         }
-
         .shortcut-tag {
-            font-size: 10px;
-            font-weight: normal;
-            margin-top: 4px;
-            display: block;
+            font-size: 10px; font-weight: normal; margin-top: 4px; display: block;
         }
     </style>
 </head>
@@ -288,8 +280,25 @@
                 <img src="School Bedge-01.png" alt="School Badge">
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
                 
-                <!-- NEW YEAR SELECTOR FOR SCHEME OF WORK -->
-                <div class="sow-year-container">
+                <!-- NEW: SUBJECT, GRADE, YEAR DROPDOWNS -->
+                <div class="sow-controls-container" dir="rtl">
+                    <select id="sow-subject" onchange="loadCurriculum()">
+                        <option value="ISLAM">އިސްލާމް (Islam)</option>
+                        <option value="DHIVEHI">ދިވެހި (Dhivehi)</option>
+                        <option value="QURAN">ޤުރްއާން (Quran)</option>
+                        <option value="ARABIC">ޢަރަބި (Arabic)</option>
+                        <option value="QAUMIYYATH">ޤައުމިއްޔަތު (Qaumiyyath)</option>
+                    </select>
+                    
+                    <select id="sow-grade" onchange="loadCurriculum()">
+                        <option value="1">Grade 1</option><option value="2">Grade 2</option>
+                        <option value="3">Grade 3</option><option value="4">Grade 4</option>
+                        <option value="5">Grade 5</option><option value="6">Grade 6</option>
+                        <option value="7">Grade 7</option><option value="8">Grade 8</option>
+                        <option value="9">Grade 9</option><option value="10" selected>Grade 10</option>
+                        <option value="11">Grade 11</option><option value="12">Grade 12</option>
+                    </select>
+                    
                     <select id="sow-year"></select>
                 </div>
                 
@@ -343,20 +352,17 @@
         const sowYearDropdown = document.getElementById('sow-year');
         
         for (let i = 2024; i <= 2050; i++) {
-            // Add to Lesson Plan form
             let optionLP = document.createElement('option');
             optionLP.value = i; optionLP.text = i;
             yearDropdown.appendChild(optionLP);
             
-            // Add to Scheme of Work form
             let optionSOW = document.createElement('option');
             optionSOW.value = i; optionSOW.text = i;
             sowYearDropdown.appendChild(optionSOW);
         }
 
-        // Set default values to current year if desired (e.g., 2026)
-        yearDropdown.value = new Date().getFullYear();
-        sowYearDropdown.value = new Date().getFullYear();
+        yearDropdown.value = 2026;
+        sowYearDropdown.value = 2026;
 
         function updateHeader() {
             const y = document.getElementById('year').value;
@@ -372,7 +378,6 @@
             let t1Html = ''; let t2Html = '';
             
             for (let i = 1; i <= 25; i++) {
-                // TERM 1 ROW
                 t1Html += `
                 <div class="week-group" id="t1-w${i}">
                     <div class="week-row">
@@ -384,7 +389,6 @@
                     </div>
                 </div>`;
                 
-                // TERM 2 ROW
                 t2Html += `
                 <div class="week-group" id="t2-w${i}">
                     <div class="week-row">
@@ -401,12 +405,11 @@
         }
         generateWeekRows();
 
-        // 3. Logic to Add a new Dropdown row when [+] is clicked
+        // 3. Logic to Add/Remove Dropdowns
         function addDropdown(term, week, containerId) {
             const container = document.getElementById(containerId);
             const row = document.createElement('div');
             row.className = 'week-row';
-            
             row.innerHTML = `
                 <label></label> 
                 <select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags(this)">
@@ -414,10 +417,7 @@
                 </select>
                 <button class="action-btn remove-btn" title="Remove" onclick="removeDropdown(this)">×</button>
             `;
-            
             container.appendChild(row);
-
-            // Populate the new empty dropdown with our loaded outcomes
             const select = row.querySelector('select');
             if (globalOutcomes.length > 0) {
                 globalOutcomes.forEach((outcome, index) => {
@@ -430,13 +430,12 @@
             }
         }
 
-        // 4. Logic to Remove a Dropdown when [x] is clicked
         function removeDropdown(btn) {
             btn.parentElement.remove(); 
             updateTags(); 
         }
 
-        // 5. Tab Switching Logic
+        // 4. Tab Switching & Curriculum Loading Logic
         let outcomesLoaded = false;
         function switchTab(tab) {
             document.getElementById('box-sow').classList.remove('active');
@@ -450,13 +449,30 @@
                 document.getElementById('lesson-plan-section').style.display = 'block';
             } else if (tab === 'sow') {
                 document.getElementById('sow-section').style.display = 'block';
-                if (!outcomesLoaded) fetchOutcomes(); 
+                if (!outcomesLoaded) {
+                    loadCurriculum(); 
+                    outcomesLoaded = true;
+                }
             }
         }
 
-        // 6. Fetch Outcomes & Populate Grid/Dropdowns
+        // NEW: This clears the matrix completely when you change Grade or Subject
+        function loadCurriculum() {
+            generateWeekRows(); 
+            document.getElementById('outcomes-grid').innerHTML = '';
+            document.getElementById('preview-content').innerText = 'Hover over a number or select a dropdown to read the full text here...';
+            fetchOutcomes();
+        }
+
         function fetchOutcomes() {
-            fetch(`${googleAppScriptUrl}?action=getOutcomes`)
+            document.getElementById('outcomes-loading').style.display = 'block';
+            document.getElementById('outcomes-loading').innerText = 'Loading curriculum from Google Sheets...';
+            document.getElementById('outcomes-grid').innerHTML = '';
+            
+            const subject = document.getElementById('sow-subject').value;
+            const grade = document.getElementById('sow-grade').value;
+
+            fetch(`${googleAppScriptUrl}?action=getOutcomes&subject=${subject}&grade=${grade}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('outcomes-loading').style.display = 'none';
@@ -470,9 +486,7 @@
                             let numBox = document.createElement('div');
                             numBox.className = 'number-item';
                             numBox.id = `num-item-${index}`;
-                            
                             numBox.onmouseover = function() { showPreview(index); };
-                            
                             numBox.innerHTML = `<span>${index + 1}</span><div class="tag-container" id="tag-container-${index}"></div>`;
                             gridElement.appendChild(numBox);
 
@@ -484,9 +498,8 @@
                                 dropdown.appendChild(option);
                             });
                         });
-                        outcomesLoaded = true;
                     } else {
-                        gridElement.innerHTML = `<span style="color: red;">Error loading data</span>`;
+                        gridElement.innerHTML = `<span style="color: red;">${data.error}</span>`;
                     }
                 })
                 .catch(error => {
@@ -494,20 +507,16 @@
                 });
         }
 
-        // 7. Preview Display Function
         function showPreview(index) {
             const previewBox = document.getElementById('preview-content');
             previewBox.style.color = '#000'; 
             previewBox.innerText = `${parseInt(index) + 1} - ${globalOutcomes[index]}`;
         }
 
-        // 8. Update Color Tags Logic
         function updateTags(changedDropdown) {
             if (changedDropdown && changedDropdown.value !== "") {
                 showPreview(changedDropdown.value);
             }
-
-            // Remove all existing color classes and clear tags
             document.querySelectorAll('.number-item').forEach(item => {
                 item.classList.remove('selected-t1', 'selected-t2');
             });
@@ -515,7 +524,6 @@
                 container.innerHTML = '';
             });
 
-            // Re-apply correct color classes based on the Term
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
@@ -527,13 +535,11 @@
                     const targetTagContainer = document.getElementById(`tag-container-${selectedIndex}`);
                     
                     if (targetBox && targetTagContainer) {
-                        // Apply Red for Term 1, Green for Term 2
                         if (term === 'T1') {
                             targetBox.classList.add('selected-t1');
                         } else if (term === 'T2') {
                             targetBox.classList.add('selected-t2');
                         }
-                        
                         const tag = document.createElement('span');
                         tag.className = 'shortcut-tag';
                         tag.innerText = shortcutText;
@@ -543,8 +549,8 @@
             });
         }
 
-        // 9. Generate Lesson Plan Logic
         function generateLessonPlan() {
+            // (Unchanged generation logic)
             const btn = document.getElementById('generateBtn');
             const statusDiv = document.getElementById('status');
             btn.disabled = true;
