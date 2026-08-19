@@ -31,11 +31,11 @@
         .week-row label { width: 35px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: left; flex-shrink: 0; }
         .week-row select { flex: 1; padding: 6px; font-size: 14px; direction: rtl; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
 
-        /* NEW: Date & Time Picker Row for Lesson Plan */
-        .date-picker-row { display: flex; align-items: center; gap: 5px; background-color: #e9ecef; padding: 5px 8px; border-radius: 4px; margin-bottom: 8px; }
-        .date-picker-row .date-label { font-size: 12px; font-weight: bold; color: #333; margin-right: auto; }
-        .date-picker-row input[type="date"] { padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; width: 95px; font-family: Arial, sans-serif; }
-        .date-picker-row .date-to { font-size: 11px; color: #555; font-weight: bold; }
+        /* FIX: Flex-wrap allows the items to drop to the next line if they are squished! */
+        .date-picker-row { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; background-color: #e9ecef; padding: 5px 8px; border-radius: 4px; margin-bottom: 8px; }
+        .date-picker-row .date-label { font-size: 12px; font-weight: bold; color: #333; }
+        .date-picker-row input[type="date"] { padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; width: 90px; font-family: Arial, sans-serif; }
+        .date-picker-row .date-to { font-size: 11px; color: #555; font-weight: bold; margin: 0 2px; }
         .date-picker-row select.lp-time-duration { padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; font-family: Arial, sans-serif; direction: rtl; }
 
         .action-btn { width: 28px; height: 28px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
@@ -228,7 +228,7 @@
                         <input type="date" class="lp-date-start" data-term="T1" data-week="W${i}">
                         <span class="date-to">to</span>
                         <input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
-                        <span class="date-to" style="margin-left: 10px; margin-right: 5px;">Time:</span>
+                        <span class="date-to" style="margin-left: 5px;">Time:</span>
                         <select class="lp-time-duration" data-term="T1" data-week="W${i}">
                             <option value="30">30 މިނެޓް</option>
                             <option value="35" selected>35 މިނެޓް</option>
@@ -252,7 +252,7 @@
                         <input type="date" class="lp-date-start" data-term="T2" data-week="W${i}">
                         <span class="date-to">to</span>
                         <input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
-                        <span class="date-to" style="margin-left: 10px; margin-right: 5px;">Time:</span>
+                        <span class="date-to" style="margin-left: 5px;">Time:</span>
                         <select class="lp-time-duration" data-term="T2" data-week="W${i}">
                             <option value="30">30 މިނެޓް</option>
                             <option value="35" selected>35 މިނެޓް</option>
@@ -276,7 +276,7 @@
         generateSowWeekRows();
         generateLpWeekRows();
 
-        // 4. Add/Remove Dropdowns (Handles both SOW and LP based on 'type')
+        // 4. Add/Remove Dropdowns
         function addDropdown(term, week, containerId, type) {
             const container = document.getElementById(containerId);
             const row = document.createElement('div'); row.className = 'week-row';
