@@ -31,7 +31,6 @@
         .week-row label { width: 35px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: left; flex-shrink: 0; }
         .week-row select { flex: 1; padding: 6px; font-size: 14px; direction: rtl; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
 
-        /* FIX: Flex-wrap allows the items to drop to the next line if they are squished! */
         .date-picker-row { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; background-color: #e9ecef; padding: 5px 8px; border-radius: 4px; margin-bottom: 8px; }
         .date-picker-row .date-label { font-size: 12px; font-weight: bold; color: #333; }
         .date-picker-row input[type="date"] { padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; width: 90px; font-family: Arial, sans-serif; }
@@ -203,6 +202,14 @@
         lpYearDropdown.value = 2026; 
         sowYearDropdown.value = 2026;
 
+        // Date Formatter helper (converts YYYY-MM-DD to DD/MM/YYYY)
+        function formatDate(dateString) {
+            if (!dateString) return "";
+            const parts = dateString.split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateString;
+        }
+
         // 2. Generate the 25 Weeks for SOW
         function generateSowWeekRows() {
             const t1Container = document.getElementById('sow-term1-weeks');
@@ -215,7 +222,7 @@
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        // 3. Generate the 25 Weeks for LP (WITH DATE & TIME PICKERS)
+        // 3. Generate the 25 Weeks for LP 
         function generateLpWeekRows() {
             const t1Container = document.getElementById('lp-term1-weeks');
             const t2Container = document.getElementById('lp-term2-weeks');
@@ -272,7 +279,6 @@
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        // Initialize both structurally
         generateSowWeekRows();
         generateLpWeekRows();
 
@@ -451,7 +457,69 @@
         }
 
         function generateLessonPlan() {
-            alert("Lesson Plan PDF generation will be updated in the next step!");
+            const btn = document.getElementById('generateLpBtn'); 
+            const statusDiv = document.getElementById('lp-generate-status');
+            
+            btn.disabled = true; 
+            btn.innerText = "Generating Lesson Plan PDF... Please wait"; 
+            statusDiv.innerHTML = "";
+
+            const year = document.getElementById('lp-year').value; 
+            const subjectSelect = document.getElementById('lp-subject');
+            const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; 
+            const grade = document.getElementById('lp-grade').value;
+
+            // Gather all the selected outcomes from the LP dropdowns
+            let lpData = { T1: {}, T2: {} };
+            
+            document.querySelectorAll('#lesson-plan-section .outcome-dropdown').forEach(dropdown => {
+                if (dropdown.value !== "") {
+                    const term = dropdown.getAttribute('data-term'); 
+                    const week = dropdown.getAttribute('data-week');
+                    const index = dropdown.value; 
+                    const fullText = globalLpOutcomes[index]; 
+
+                    // Grab the sibling date and time elements
+                    const group = dropdown.closest('.week-group');
+                    const startDateRaw = group.querySelector('.lp-date-start').value;
+                    const endDateRaw = group.querySelector('.lp-date-end').value;
+                    const timeValue = group.querySelector('.lp-time-duration').value;
+
+                    // Push as an object with full details
+                    if (!lpData[term][week]) { lpData[term][week] = []; }
+                    lpData[term][week].push({
+                        startDate: formatDate(startDateRaw),
+                        endDate: formatDate(endDateRaw),
+                        time: timeValue,
+                        outcome: fullText
+                    });
+                }
+            });
+
+            const payload = {
+                action: 'generateLP',
+                year: year,
+                subject: subjectText,
+                grade: grade,
+                lpData: lpData
+            };
+
+            fetch(googleAppScriptUrl, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify(payload) 
+            })
+            .then(response => response.json()).then(data => {
+                if (data.success) { 
+                    statusDiv.innerHTML = `Success! <br><br> <a href="${data.url}" target="_blank" style="color: #d9534f; font-size: 18px;">Click here to download your Lesson Plan PDF</a>`; 
+                } else { 
+                    statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`; 
+                }
+                btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
+            }).catch(error => {
+                statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server. Ensure you Deployed a NEW Version in Google.</span>`; 
+                btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
+            });
         }
 
         // Initialize SOW tab automatically on page load
