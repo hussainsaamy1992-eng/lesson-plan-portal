@@ -177,7 +177,7 @@
             let opt = document.createElement('option'); opt.value = `W${i}`; opt.text = `Week ${i}`; exportLpWeek.appendChild(opt);
         }
 
-        // --- NEW: Custom Date Formatter for "Aug 16 to Aug 22" ---
+        // --- NEW: Custom Date Formatter ("Aug 16 - Aug 22") ---
         function getFormattedDateRange(startRaw, endRaw) {
             if (!startRaw && !endRaw) return "";
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -194,7 +194,8 @@
                 if (!isNaN(d2)) endStr = `${months[d2.getMonth()]} ${d2.getDate()}`;
             }
 
-            if (startStr && endStr) return `${startStr} to ${endStr}`;
+            // Using dash instead of 'to'
+            if (startStr && endStr) return `${startStr} - ${endStr}`;
             if (startStr) return startStr;
             if (endStr) return endStr;
             return "";
@@ -422,11 +423,10 @@
                         const startDateRaw = targetGroup.querySelector('.lp-date-start').value;
                         const endDateRaw = targetGroup.querySelector('.lp-date-end').value;
                         const timeSelect = targetGroup.querySelector('.lp-time-duration');
-                        const timeValue = timeSelect.options[timeSelect.selectedIndex].value; // Pulling value directly
+                        const timeValue = timeSelect.options[timeSelect.selectedIndex].value; 
 
                         if (!lpData[exportTerm][exportWeek]) { lpData[exportTerm][exportWeek] = []; }
                         
-                        // Use the new date formatter
                         lpData[exportTerm][exportWeek].push({
                             dateString: getFormattedDateRange(startDateRaw, endDateRaw),
                             time: timeValue,
