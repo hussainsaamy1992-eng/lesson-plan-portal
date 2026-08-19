@@ -67,6 +67,23 @@
         .school-header h1 { font-size: 22px; margin: 5px 0; color: #000; }
         .school-header h2 { font-size: 18px; margin: 5px 0; color: #000; }
 
+        /* NEW SOW Year Dropdown Styling */
+        .sow-year-container {
+            margin: 10px auto;
+            max-width: 150px;
+        }
+        .sow-year-container select {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
         /* Forms inside Lesson Plan */
         .lp-form label { font-weight: bold; display: block; margin-top: 15px; margin-bottom: 5px; text-align: right; }
         .lp-form select, .lp-form input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; text-align: right; direction: rtl; }
@@ -270,6 +287,12 @@
             <div class="school-header">
                 <img src="School Bedge-01.png" alt="School Badge">
                 <h1>ވިލުފުށީ ސްކޫލް</h1>
+                
+                <!-- NEW YEAR SELECTOR FOR SCHEME OF WORK -->
+                <div class="sow-year-container">
+                    <select id="sow-year"></select>
+                </div>
+                
                 <h2>Scheme of Work Matrix</h2>
             </div>
             
@@ -315,13 +338,25 @@
         const googleAppScriptUrl = 'https://script.google.com/macros/s/AKfycbx5Obu8O730P92doHjVupIcxpKg2bs5sg9w5UpqApXA3acYJyT8bZof7B3KSOHG85Kisw/exec';
         let globalOutcomes = []; 
 
-        // 1. Initial Setup for Lesson Plan
+        // 1. Initial Setup for Years
         const yearDropdown = document.getElementById('year');
-        for (let i = 2026; i <= 2050; i++) {
-            let option = document.createElement('option');
-            option.value = i; option.text = i;
-            yearDropdown.appendChild(option);
+        const sowYearDropdown = document.getElementById('sow-year');
+        
+        for (let i = 2024; i <= 2050; i++) {
+            // Add to Lesson Plan form
+            let optionLP = document.createElement('option');
+            optionLP.value = i; optionLP.text = i;
+            yearDropdown.appendChild(optionLP);
+            
+            // Add to Scheme of Work form
+            let optionSOW = document.createElement('option');
+            optionSOW.value = i; optionSOW.text = i;
+            sowYearDropdown.appendChild(optionSOW);
         }
+
+        // Set default values to current year if desired (e.g., 2026)
+        yearDropdown.value = new Date().getFullYear();
+        sowYearDropdown.value = new Date().getFullYear();
 
         function updateHeader() {
             const y = document.getElementById('year').value;
@@ -373,7 +408,7 @@
             row.className = 'week-row';
             
             row.innerHTML = `
-                <label></label> <!-- Empty label to keep alignment perfectly straight -->
+                <label></label> 
                 <select class="outcome-dropdown" data-term="${term}" data-week="${week}" onchange="updateTags(this)">
                     <option value="">-- Select --</option>
                 </select>
@@ -397,8 +432,8 @@
 
         // 4. Logic to Remove a Dropdown when [x] is clicked
         function removeDropdown(btn) {
-            btn.parentElement.remove(); // Deletes the row
-            updateTags(); // Refreshes the red/green tags so the deleted one disappears
+            btn.parentElement.remove(); 
+            updateTags(); 
         }
 
         // 5. Tab Switching Logic
@@ -472,6 +507,7 @@
                 showPreview(changedDropdown.value);
             }
 
+            // Remove all existing color classes and clear tags
             document.querySelectorAll('.number-item').forEach(item => {
                 item.classList.remove('selected-t1', 'selected-t2');
             });
@@ -479,6 +515,7 @@
                 container.innerHTML = '';
             });
 
+            // Re-apply correct color classes based on the Term
             document.querySelectorAll('.outcome-dropdown').forEach(dropdown => {
                 if (dropdown.value !== "") {
                     const selectedIndex = dropdown.value;
@@ -490,6 +527,7 @@
                     const targetTagContainer = document.getElementById(`tag-container-${selectedIndex}`);
                     
                     if (targetBox && targetTagContainer) {
+                        // Apply Red for Term 1, Green for Term 2
                         if (term === 'T1') {
                             targetBox.classList.add('selected-t1');
                         } else if (term === 'T2') {
