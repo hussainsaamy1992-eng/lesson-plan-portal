@@ -31,6 +31,12 @@
         .week-row label { width: 35px; font-weight: bold; font-size: 13px; color: #333; margin: 0; text-align: left; flex-shrink: 0; }
         .week-row select { flex: 1; padding: 6px; font-size: 14px; direction: rtl; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
 
+        /* NEW: Date Picker Row for Lesson Plan */
+        .date-picker-row { display: flex; align-items: center; gap: 5px; background-color: #e9ecef; padding: 5px 8px; border-radius: 4px; margin-bottom: 8px; }
+        .date-picker-row .date-label { font-size: 12px; font-weight: bold; color: #333; margin-right: auto; }
+        .date-picker-row input[type="date"] { padding: 3px; font-size: 11px; border: 1px solid #ccc; border-radius: 3px; width: 95px; font-family: Arial, sans-serif; }
+        .date-picker-row .date-to { font-size: 11px; color: #555; font-weight: bold; }
+
         .action-btn { width: 28px; height: 28px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .add-btn { background-color: #e9ecef; color: #495057; border: 1px solid #ced4da; }
         .add-btn:hover { background-color: #dde2e6; }
@@ -208,14 +214,45 @@
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
 
-        // 3. Generate the 25 Weeks for LP
+        // 3. Generate the 25 Weeks for LP (WITH DATE PICKERS)
         function generateLpWeekRows() {
             const t1Container = document.getElementById('lp-term1-weeks');
             const t2Container = document.getElementById('lp-term2-weeks');
             let t1Html = ''; let t2Html = '';
             for (let i = 1; i <= 25; i++) {
-                t1Html += `<div class="week-group" id="lp-t1-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateLpTags(this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button></div></div>`;
-                t2Html += `<div class="week-group" id="lp-t2-w${i}"><div class="week-row"><label>W${i}</label><select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateLpTags(this)"><option value="">-- Select --</option></select><button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button></div></div>`;
+                t1Html += `
+                <div class="week-group" id="lp-t1-w${i}">
+                    <div class="date-picker-row" dir="ltr">
+                        <span class="date-label">Dates:</span>
+                        <input type="date" class="lp-date-start" data-term="T1" data-week="W${i}">
+                        <span class="date-to">to</span>
+                        <input type="date" class="lp-date-end" data-term="T1" data-week="W${i}">
+                    </div>
+                    <div class="week-row">
+                        <label>W${i}</label>
+                        <select class="outcome-dropdown" data-term="T1" data-week="W${i}" onchange="updateLpTags(this)">
+                            <option value="">-- Select --</option>
+                        </select>
+                        <button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T1', 'W${i}', 'lp-t1-w${i}', 'lp')">+</button>
+                    </div>
+                </div>`;
+                
+                t2Html += `
+                <div class="week-group" id="lp-t2-w${i}">
+                    <div class="date-picker-row" dir="ltr">
+                        <span class="date-label">Dates:</span>
+                        <input type="date" class="lp-date-start" data-term="T2" data-week="W${i}">
+                        <span class="date-to">to</span>
+                        <input type="date" class="lp-date-end" data-term="T2" data-week="W${i}">
+                    </div>
+                    <div class="week-row">
+                        <label>W${i}</label>
+                        <select class="outcome-dropdown" data-term="T2" data-week="W${i}" onchange="updateLpTags(this)">
+                            <option value="">-- Select --</option>
+                        </select>
+                        <button class="action-btn add-btn" title="Add another outcome" onclick="addDropdown('T2', 'W${i}', 'lp-t2-w${i}', 'lp')">+</button>
+                    </div>
+                </div>`;
             }
             t1Container.innerHTML = t1Html; t2Container.innerHTML = t2Html;
         }
@@ -398,9 +435,8 @@
             });
         }
 
-        // Leave existing LP Generate logic for now as requested
         function generateLessonPlan() {
-            alert("Lesson Plan generation logic will be updated in the next step!");
+            alert("Lesson Plan PDF generation will be updated in the next step!");
         }
 
         // Initialize SOW tab automatically on page load
