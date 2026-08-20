@@ -147,6 +147,12 @@
                     <label>ޕްރިންޓްކުރާ ހަފްތާ (Export Week):</label>
                     <select id="export-lp-term"><option value="T1">ފުރަތަމަ ޓާރމް (Term 1)</option><option value="T2">ދެވަނަ ޓާރމް (Term 2)</option></select>
                     <select id="export-lp-week"></select>
+                    
+                    <label style="margin-right: 15px;">ފޯމެޓް (Format):</label>
+                    <select id="export-lp-format">
+                        <option value="pdf">PDF</option>
+                        <option value="word">Word (.docx)</option>
+                    </select>
                 </div>
                 <br>
                 <button id="generateLpBtn" class="generate-btn" onclick="generateLessonPlan()">Generate Lesson Plan PDF</button>
