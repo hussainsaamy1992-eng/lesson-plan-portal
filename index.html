@@ -360,6 +360,10 @@
             const exportTerm = document.getElementById('export-lp-term').value; const exportWeek = document.getElementById('export-lp-week').value;
             const year = document.getElementById('lp-year').value; const subjectSelect = document.getElementById('lp-subject');
             const subjectText = subjectSelect.options[subjectSelect.selectedIndex].text; const grade = document.getElementById('lp-grade').value;
+            
+            // Get the selected format
+            const exportFormat = document.getElementById('export-lp-format').value;
+            const formatLabel = exportFormat === 'word' ? 'Word Document' : 'PDF';
 
             let lpData = { T1: {}, T2: {} };
             let hasData = false;
@@ -393,16 +397,21 @@
 
             if (!hasData) { statusDiv.innerHTML = `<span style="color: red;">Error: No outcomes have been selected for ${exportTerm} ${exportWeek}. Please select at least one outcome.</span>`; return; }
 
-            btn.disabled = true; btn.innerText = "Generating Lesson Plan PDF... Please wait"; statusDiv.innerHTML = "";
+            btn.disabled = true; btn.innerText = `Generating Lesson Plan ${formatLabel}... Please wait`; statusDiv.innerHTML = "";
 
-            const payload = { action: 'generateLP', year: year, subject: subjectText, grade: grade, lpData: lpData };
+            // Pass the format in the payload to Google Apps Script
+            const payload = { action: 'generateLP', year: year, subject: subjectText, grade: grade, lpData: lpData, format: exportFormat };
 
             fetch(googleAppScriptUrl, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
             .then(response => response.json()).then(data => {
-                if (data.success) { statusDiv.innerHTML = `Success! <br><br> <a href="${data.url}" target="_blank" style="color: #d9534f; font-size: 18px;">Click here to download your Lesson Plan PDF</a>`; } else { statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`; }
-                btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
+                if (data.success) { 
+                    statusDiv.innerHTML = `Success! <br><br> <a href="${data.url}" target="_blank" style="color: #d9534f; font-size: 18px;">Click here to download your Lesson Plan ${formatLabel}</a>`; 
+                } else { 
+                    statusDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`; 
+                }
+                btn.disabled = false; btn.innerText = "Generate Lesson Plan";
             }).catch(error => {
-                statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server. Ensure you Deployed a NEW Version in Google.</span>`; btn.disabled = false; btn.innerText = "Generate Lesson Plan PDF";
+                statusDiv.innerHTML = `<span style="color: red;">Failed to connect to server. Ensure you Deployed a NEW Version in Google.</span>`; btn.disabled = false; btn.innerText = "Generate Lesson Plan";
             });
         }
 
