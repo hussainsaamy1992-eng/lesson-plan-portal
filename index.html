@@ -15,7 +15,7 @@
       background-color: var(--secondary);
       color: var(--text);
       padding: 20px;
-      max-width: 1200px; /* Widened to support side-by-side terms */
+      max-width: 1200px;
       margin: 0 auto;
     }
     
@@ -61,17 +61,14 @@
     .view-section { display: none; }
     .view-section.active { display: block; }
 
-    /* Dual Column Layout for Terms */
     .terms-wrapper { display: flex; gap: 20px; }
     .term-col { flex: 1; }
     .term-col h2 { text-align: center; color: var(--primary); border-bottom: 2px solid #cbd5e1; padding-bottom: 10px; }
     
-    /* Collapsible Weeks */
     .week-details { margin-bottom: 10px; background: white; border-radius: 6px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
     .week-details summary { padding: 12px; font-weight: bold; cursor: pointer; background: #f8fafc; border-radius: 6px; }
     .week-content { padding: 15px; }
     
-    /* Period Card Design */
     .period-card { border: 1px dashed #94a3b8; padding: 15px; margin-bottom: 15px; border-radius: 6px; background: #fdfdfd; }
     .outcome-block { background: #eff6ff; padding: 10px; border-left: 4px solid #3b82f6; margin-bottom: 10px; border-radius: 4px; }
     .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
@@ -98,6 +95,8 @@
       <div>
         <label>Grade</label>
         <select id="grade">
+          <option value="12">Grade 12</option>
+          <option value="11">Grade 11</option>
           <option value="10">Grade 10</option>
           <option value="9">Grade 9</option>
           <option value="8">Grade 8</option>
@@ -128,7 +127,6 @@
         </select>
       </div>
       <div style="display: flex; align-items: end;">
-        <!-- Changed this button text to Load Data -->
         <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Load Data</button>
       </div>
     </div>
@@ -224,6 +222,8 @@
           det.innerHTML = `
             <summary>Week ${w}</summary>
             <div class="week-content" id="${term}-W${w}">
+               <!-- Fixed container to safely append unlimited periods -->
+               <div class="periods-list"></div>
                <button class="btn" style="background:#475569; width:auto; padding:8px 15px; margin-top:10px;" onclick="addPeriod('${term}', 'W${w}')">+ Add Period</button>
             </div>
           `;
@@ -233,33 +233,32 @@
       document.getElementById('generateBtn').style.display = 'block';
     }
 
-    // Dynamic function to inject a new Period configuration block
+    function renumberPeriods(containerId) {
+       const container = document.getElementById(containerId);
+       if(!container) return;
+       const titles = container.querySelectorAll('.period-title');
+       titles.forEach((title, index) => {
+           title.innerText = `Period ${index + 1}`;
+       });
+    }
+
     function addPeriod(term, weekKey) {
-      const containerElement = document.getElementById(`${term}-${weekKey}`);
+      const weekContainer = document.getElementById(`${term}-${weekKey}`);
+      const listContainer = weekContainer.querySelector('.periods-list');
       const periodCard = document.createElement('div');
       periodCard.className = 'period-card';
       
       let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text.replace(/"/g, '&quot;')}">${o.text.substring(0,80)}...</option>`).join('');
 
+      // Removed the Period dropdown, added dynamic renumbering
       periodCard.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #ddd; padding-bottom:10px;">
-           <strong style="color:var(--primary);">Configure Period</strong>
-           <button style="color:red; font-weight:bold; border:none; background:none; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">X Remove Period</button>
+           <strong style="color:var(--primary);" class="period-title">Period</strong>
+           <button style="color:red; font-weight:bold; border:none; background:none; cursor:pointer;" onclick="this.closest('.period-card').remove(); renumberPeriods('${term}-${weekKey}');">X Remove</button>
         </div>
         
-        <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
            <div><label>Date</label><input type="date" class="p-date" /></div>
-           <div>
-             <label>Period</label>
-             <select class="p-num">
-                <option value="1">Period 1</option>
-                <option value="2">Period 2</option>
-                <option value="3">Period 3</option>
-                <option value="4">Period 4</option>
-                <option value="5">Period 5</option>
-                <option value="6">Period 6</option>
-             </select>
-           </div>
            <div>
              <label>Time</label>
              <select class="p-time">
@@ -281,11 +280,10 @@
         <div class="selected-outcomes-container" style="margin-top:15px;"></div>
       `;
       
-      const btn = containerElement.querySelector('button');
-      containerElement.insertBefore(periodCard, btn);
+      listContainer.appendChild(periodCard);
+      renumberPeriods(`${term}-${weekKey}`);
     }
 
-    // Extracts Outcome, creates a card, and shows checkable indicators
     function selectOutcome(selectElement) {
        const val = selectElement.value;
        if(!val) return;
@@ -332,18 +330,18 @@
       
       let lpData = { T1: {}, T2: {} };
       
-      // Parse the new dynamic layout
       document.querySelectorAll('.week-content').forEach(weekContent => {
         let [term, weekKey] = weekContent.id.split('-');
         let periods = weekContent.querySelectorAll('.period-card');
         
         if(periods.length > 0) {
-            periods.forEach(pCard => {
+            periods.forEach((pCard, index) => {
                 let dateVal = pCard.querySelector('.p-date').value;
-                let pNum = pCard.querySelector('.p-num').value;
                 let pTime = pCard.querySelector('.p-time').value;
                 
-                // Formats custom string to bypass backend hardcoding limitations safely
+                // Calculates Period 1, 2, 3 dynamically based on its position in the list
+                let pNum = index + 1; 
+                
                 let finalDateStr = `${dateVal} | P${pNum} (${pTime}m)`;
                 if(!dateVal) finalDateStr = `P${pNum} (${pTime}m)`;
                 
