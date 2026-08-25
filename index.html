@@ -121,7 +121,7 @@
     <div class="control-panel">
       <div>
         <label>Academic Year</label>
-        <select id="year"></select> <!-- Populated by JavaScript below -->
+        <select id="year"></select> 
       </div>
       <div>
         <label>Grade</label>
@@ -145,6 +145,8 @@
           <option value="QURAN">Quran</option>
           <option value="DHIVEHI">Dhivehi</option>
           <option value="QAUMIHYATH">Qaumihyath</option>
+          <!-- Arabic added right here! -->
+          <option value="ARABIC">Arabic</option>
         </select>
       </div>
       <div>
@@ -155,7 +157,6 @@
         </select>
       </div>
       <div style="display: flex; align-items: end;">
-        <!-- Button text changed as requested -->
         <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Download</button>
       </div>
     </div>
@@ -198,17 +199,14 @@
 
     // Tab Switcher Logic
     function switchTab(tab) {
-      // Update Buttons
       document.getElementById('btn-lp').classList.remove('active');
       document.getElementById('btn-sow').classList.remove('active');
       document.getElementById('btn-' + tab).classList.add('active');
 
-      // Update Views
       document.getElementById('view-lp').classList.remove('active');
       document.getElementById('view-sow').classList.remove('active');
       document.getElementById('view-' + tab).classList.add('active');
 
-      // Update Subtitle
       const subtitle = document.getElementById('header-subtitle');
       if (tab === 'lp') {
         subtitle.innerText = "Lesson Plan Generator";
@@ -216,7 +214,6 @@
         subtitle.innerText = "Scheme of Work Generator";
       }
       
-      // Clear status when switching tabs
       setStatus("");
     }
 
