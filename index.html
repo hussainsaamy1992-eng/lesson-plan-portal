@@ -8,6 +8,7 @@
       --primary: #1e3a8a;
       --secondary: #f3f4f6;
       --text: #1f2937;
+      --active-tab: #2563eb;
     }
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -17,6 +18,34 @@
       max-width: 900px;
       margin: 0 auto;
     }
+    
+    /* Top Navigation Tabs */
+    .tab-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      background: #cbd5e1;
+      color: var(--text);
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .tab-btn:hover:not(.active) {
+      background: #94a3b8;
+    }
+
     .header {
       text-align: center;
       background: var(--primary);
@@ -35,7 +64,7 @@
       border-radius: 8px;
       margin-bottom: 20px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 15px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
@@ -68,52 +97,83 @@
     #status { margin-top: 15px; font-weight: bold; text-align: center; }
     .success { color: #16a34a; }
     .error { color: #dc2626; }
+    
+    /* Hide views by default */
+    .view-section { display: none; }
+    .view-section.active { display: block; }
   </style>
 </head>
 <body>
 
+  <!-- Top Navigation -->
+  <div class="tab-container">
+    <button id="btn-lp" class="tab-btn active" onclick="switchTab('lp')">LESSON PLAN</button>
+    <button id="btn-sow" class="tab-btn" onclick="switchTab('sow')">SCHEME OF WORK</button>
+  </div>
+
   <div class="header">
     <h1>VILUFUSHEE SCHOOL</h1>
-    <p>Lesson Plan & Scheme of Work Generator</p>
+    <p id="header-subtitle">Lesson Plan Generator</p>
   </div>
 
-  <div class="control-panel">
-    <div>
-      <label>Academic Year</label>
-      <input type="text" id="year" value="2026">
+  <!-- LESSON PLAN VIEW -->
+  <div id="view-lp" class="view-section active">
+    <div class="control-panel">
+      <div>
+        <label>Academic Year</label>
+        <select id="year"></select> <!-- Populated by JavaScript below -->
+      </div>
+      <div>
+        <label>Grade</label>
+        <select id="grade">
+          <option value="10">Grade 10</option>
+          <option value="9">Grade 9</option>
+          <option value="8">Grade 8</option>
+          <option value="7">Grade 7</option>
+          <option value="6">Grade 6</option>
+          <option value="5">Grade 5</option>
+          <option value="4">Grade 4</option>
+          <option value="3">Grade 3</option>
+          <option value="2">Grade 2</option>
+          <option value="1">Grade 1</option>
+        </select>
+      </div>
+      <div>
+        <label>Subject</label>
+        <select id="subject">
+          <option value="ISLAM">Islam</option>
+          <option value="QURAN">Quran</option>
+          <option value="DHIVEHI">Dhivehi</option>
+          <option value="QAUMIHYATH">Qaumihyath</option>
+        </select>
+      </div>
+      <div>
+        <label>Export Format</label>
+        <select id="format">
+          <option value="pdf">PDF</option>
+          <option value="word">Word (.docx)</option>
+        </select>
+      </div>
+      <div style="display: flex; align-items: end;">
+        <!-- Button text changed as requested -->
+        <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Download</button>
+      </div>
     </div>
-    <div>
-      <label>Grade</label>
-      <select id="grade">
-        <option value="10">Grade 10</option>
-        <option value="9">Grade 9</option>
-        <option value="8">Grade 8</option>
-      </select>
-    </div>
-    <div>
-      <label>Subject</label>
-      <select id="subject">
-        <option value="ISLAM">Islam</option>
-        <option value="DHIVEHI">Dhivehi</option>
-      </select>
-    </div>
-    <div>
-      <label>Export Format</label>
-      <select id="format">
-        <option value="pdf">PDF</option>
-        <option value="word">Word (.docx)</option>
-      </select>
-    </div>
-    <div style="display: flex; align-items: end;">
-      <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Load Curriculum</button>
-    </div>
+
+    <div id="planner-container"></div>
+
+    <button class="btn" id="generateBtn" onclick="generateDocument()" style="display:none; padding: 15px; font-size: 16px;">
+      Generate VILUFUSHEE SCHOOL Lesson Plan
+    </button>
   </div>
 
-  <div id="planner-container"></div>
-
-  <button class="btn" id="generateBtn" onclick="generateDocument()" style="display:none; padding: 15px; font-size: 16px;">
-    Generate VILUFUSHEE SCHOOL Lesson Plan
-  </button>
+  <!-- SCHEME OF WORK VIEW (Placeholder for later) -->
+  <div id="view-sow" class="view-section">
+    <div style="text-align: center; padding: 40px; background: white; border-radius: 8px;">
+      <h2>Scheme of Work Portal</h2>
+      <p>Waiting for further instructions to build this section.</p>
+    </div>
+  </div>
   
   <div id="status"></div>
 
@@ -125,6 +185,41 @@
     
     let globalOutcomes = [];
 
+    // Populate Year Dropdown (2026 to 2050)
+    window.onload = function() {
+      const yearSelect = document.getElementById('year');
+      for (let i = 2026; i <= 2050; i++) {
+        let option = document.createElement('option');
+        option.value = i;
+        option.text = i;
+        yearSelect.appendChild(option);
+      }
+    };
+
+    // Tab Switcher Logic
+    function switchTab(tab) {
+      // Update Buttons
+      document.getElementById('btn-lp').classList.remove('active');
+      document.getElementById('btn-sow').classList.remove('active');
+      document.getElementById('btn-' + tab).classList.add('active');
+
+      // Update Views
+      document.getElementById('view-lp').classList.remove('active');
+      document.getElementById('view-sow').classList.remove('active');
+      document.getElementById('view-' + tab).classList.add('active');
+
+      // Update Subtitle
+      const subtitle = document.getElementById('header-subtitle');
+      if (tab === 'lp') {
+        subtitle.innerText = "Lesson Plan Generator";
+      } else {
+        subtitle.innerText = "Scheme of Work Generator";
+      }
+      
+      // Clear status when switching tabs
+      setStatus("");
+    }
+
     function setStatus(msg, type = '') {
       const el = document.getElementById('status');
       el.textContent = msg;
@@ -132,7 +227,7 @@
     }
 
     async function loadData() {
-      setStatus("Loading curriculum data from sheets...", "");
+      setStatus("Downloading curriculum data...", "");
       document.getElementById('loadOutcomesBtn').disabled = true;
       
       const subject = document.getElementById('subject').value;
@@ -147,7 +242,7 @@
         if (res.success) {
           globalOutcomes = res.outcomes;
           buildUI();
-          setStatus("Curriculum loaded successfully.", "success");
+          setStatus("Data downloaded successfully.", "success");
         } else {
           setStatus("Error: " + res.error, "error");
         }
