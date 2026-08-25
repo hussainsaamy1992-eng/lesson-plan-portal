@@ -222,7 +222,6 @@
           det.innerHTML = `
             <summary>Week ${w}</summary>
             <div class="week-content" id="${term}-W${w}">
-               <!-- Fixed container to safely append unlimited periods -->
                <div class="periods-list"></div>
                <button class="btn" style="background:#475569; width:auto; padding:8px 15px; margin-top:10px;" onclick="addPeriod('${term}', 'W${w}')">+ Add Period</button>
             </div>
@@ -250,7 +249,6 @@
       
       let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text.replace(/"/g, '&quot;')}">${o.text.substring(0,80)}...</option>`).join('');
 
-      // Removed the Period dropdown, added dynamic renumbering
       periodCard.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #ddd; padding-bottom:10px;">
            <strong style="color:var(--primary);" class="period-title">Period</strong>
@@ -263,7 +261,8 @@
              <label>Time</label>
              <select class="p-time">
                 <option value="30">30 Mins</option>
-                <option value="35">35 Mins</option>
+                <!-- Added "selected" to default to 35 Mins -->
+                <option value="35" selected>35 Mins</option>
                 <option value="40">40 Mins</option>
                 <option value="45">45 Mins</option>
              </select>
@@ -339,7 +338,6 @@
                 let dateVal = pCard.querySelector('.p-date').value;
                 let pTime = pCard.querySelector('.p-time').value;
                 
-                // Calculates Period 1, 2, 3 dynamically based on its position in the list
                 let pNum = index + 1; 
                 
                 let finalDateStr = `${dateVal} | P${pNum} (${pTime}m)`;
