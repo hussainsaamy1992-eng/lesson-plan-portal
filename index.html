@@ -15,58 +15,30 @@
       background-color: var(--secondary);
       color: var(--text);
       padding: 20px;
-      max-width: 900px;
+      max-width: 1200px; /* Widened to support side-by-side terms */
       margin: 0 auto;
     }
     
-    /* Top Navigation Tabs */
-    .tab-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+    .tab-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
     .tab-btn {
-      background: #cbd5e1;
-      color: var(--text);
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
+      background: #cbd5e1; color: var(--text); border: none; padding: 12px 24px;
+      font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;
       transition: background 0.3s, color 0.3s;
     }
-    .tab-btn.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .tab-btn:hover:not(.active) {
-      background: #94a3b8;
-    }
+    .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .tab-btn:hover:not(.active) { background: #94a3b8; }
 
     .header {
-      text-align: center;
-      background: var(--primary);
-      color: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      text-align: center; background: var(--primary); color: white;
+      padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; }
     .header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
     
     .control-panel {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-      gap: 15px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     
     label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; }
@@ -82,30 +54,31 @@
     .btn:hover { opacity: 0.9; }
     .btn:disabled { background: #9ca3af; cursor: not-allowed; }
     
-    .term-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    .term-section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
-    
-    .week-row {
-      border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; margin-bottom: 15px; background: #fafafa;
-    }
-    .week-title { font-weight: bold; margin-bottom: 10px; font-size: 16px; }
-    
-    .period-row {
-      display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 10px; margin-bottom: 10px; align-items: end;
-    }
-    
     #status { margin-top: 15px; font-weight: bold; text-align: center; }
     .success { color: #16a34a; }
     .error { color: #dc2626; }
     
-    /* Hide views by default */
     .view-section { display: none; }
     .view-section.active { display: block; }
+
+    /* Dual Column Layout for Terms */
+    .terms-wrapper { display: flex; gap: 20px; }
+    .term-col { flex: 1; }
+    .term-col h2 { text-align: center; color: var(--primary); border-bottom: 2px solid #cbd5e1; padding-bottom: 10px; }
+    
+    /* Collapsible Weeks */
+    .week-details { margin-bottom: 10px; background: white; border-radius: 6px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .week-details summary { padding: 12px; font-weight: bold; cursor: pointer; background: #f8fafc; border-radius: 6px; }
+    .week-content { padding: 15px; }
+    
+    /* Period Card Design */
+    .period-card { border: 1px dashed #94a3b8; padding: 15px; margin-bottom: 15px; border-radius: 6px; background: #fdfdfd; }
+    .outcome-block { background: #eff6ff; padding: 10px; border-left: 4px solid #3b82f6; margin-bottom: 10px; border-radius: 4px; }
+    .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation -->
   <div class="tab-container">
     <button id="btn-lp" class="tab-btn active" onclick="switchTab('lp')">LESSON PLAN</button>
     <button id="btn-sow" class="tab-btn" onclick="switchTab('sow')">SCHEME OF WORK</button>
@@ -116,7 +89,6 @@
     <p id="header-subtitle">Lesson Plan Generator</p>
   </div>
 
-  <!-- LESSON PLAN VIEW -->
   <div id="view-lp" class="view-section active">
     <div class="control-panel">
       <div>
@@ -145,7 +117,6 @@
           <option value="QURAN">Quran</option>
           <option value="DHIVEHI">Dhivehi</option>
           <option value="QAUMIHYATH">Qaumihyath</option>
-          <!-- Arabic added right here! -->
           <option value="ARABIC">Arabic</option>
         </select>
       </div>
@@ -163,12 +134,11 @@
 
     <div id="planner-container"></div>
 
-    <button class="btn" id="generateBtn" onclick="generateDocument()" style="display:none; padding: 15px; font-size: 16px;">
+    <button class="btn" id="generateBtn" onclick="generateDocument()" style="display:none; padding: 15px; font-size: 16px; margin-top: 20px;">
       Generate VILUFUSHEE SCHOOL Lesson Plan
     </button>
   </div>
 
-  <!-- SCHEME OF WORK VIEW (Placeholder for later) -->
   <div id="view-sow" class="view-section">
     <div style="text-align: center; padding: 40px; background: white; border-radius: 8px;">
       <h2>Scheme of Work Portal</h2>
@@ -186,18 +156,14 @@
     
     let globalOutcomes = [];
 
-    // Populate Year Dropdown (2026 to 2050)
     window.onload = function() {
       const yearSelect = document.getElementById('year');
       for (let i = 2026; i <= 2050; i++) {
         let option = document.createElement('option');
-        option.value = i;
-        option.text = i;
-        yearSelect.appendChild(option);
+        option.value = i; option.text = i; yearSelect.appendChild(option);
       }
     };
 
-    // Tab Switcher Logic
     function switchTab(tab) {
       document.getElementById('btn-lp').classList.remove('active');
       document.getElementById('btn-sow').classList.remove('active');
@@ -207,84 +173,151 @@
       document.getElementById('view-sow').classList.remove('active');
       document.getElementById('view-' + tab).classList.add('active');
 
-      const subtitle = document.getElementById('header-subtitle');
-      if (tab === 'lp') {
-        subtitle.innerText = "Lesson Plan Generator";
-      } else {
-        subtitle.innerText = "Scheme of Work Generator";
-      }
-      
+      document.getElementById('header-subtitle').innerText = tab === 'lp' ? "Lesson Plan Generator" : "Scheme of Work Generator";
       setStatus("");
     }
 
     function setStatus(msg, type = '') {
       const el = document.getElementById('status');
-      el.textContent = msg;
-      el.className = type;
+      el.textContent = msg; el.className = type;
     }
 
     async function loadData() {
       setStatus("Downloading curriculum data...", "");
       document.getElementById('loadOutcomesBtn').disabled = true;
-      
       const subject = document.getElementById('subject').value;
       const grade = document.getElementById('grade').value;
 
       try {
         const response = await fetch(`${WEB_APP_URL}?action=getOutcomes&subject=${subject}&grade=${grade}`);
         const res = await response.json();
-        
         document.getElementById('loadOutcomesBtn').disabled = false;
         
         if (res.success) {
           globalOutcomes = res.outcomes;
           buildUI();
-          setStatus("Data downloaded successfully.", "success");
+          setStatus("Data downloaded successfully. Please configure your weeks below.", "success");
         } else {
           setStatus("Error: " + res.error, "error");
         }
       } catch (err) {
         document.getElementById('loadOutcomesBtn').disabled = false;
-        setStatus("Network Error: Make sure your Web App URL is correct and deployed for 'Anyone'.", "error");
+        setStatus("Network Error: Make sure your Web App URL is correct.", "error");
       }
     }
 
     function buildUI() {
       const container = document.getElementById('planner-container');
-      container.innerHTML = ''; 
+      container.innerHTML = `
+        <div class="terms-wrapper">
+          <div class="term-col" id="col-T1"><h2>TERM 1</h2></div>
+          <div class="term-col" id="col-T2"><h2>TERM 2</h2></div>
+        </div>
+      `;
       
-      const terms = ['T1']; 
-      
-      terms.forEach(term => {
-        let termDiv = document.createElement('div');
-        termDiv.className = 'term-section';
-        termDiv.innerHTML = `<h2>${term === 'T1' ? 'Term 1' : 'Term 2'}</h2>`;
-        
-        for(let w = 1; w <= 2; w++) {
-          let weekDiv = document.createElement('div');
-          weekDiv.className = 'week-row';
-          weekDiv.dataset.term = term;
-          weekDiv.dataset.week = 'W' + w;
-          weekDiv.innerHTML = `<div class="week-title">Week ${w}</div>`;
-          
-          for(let p = 1; p <= 2; p++) {
-            let periodDiv = document.createElement('div');
-            periodDiv.className = 'period-row';
-            
-            let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text}">${o.text.substring(0,40)}...</option>`).join('');
-            
-            periodDiv.innerHTML = `
-              <div><label>Period ${p} Date</label><input type="date" class="period-date" /></div>
-              <div><label>Outcome</label><select class="period-outcome"><option value="">Select Outcome...</option>${outcomeOptions}</select></div>
-            `;
-            weekDiv.appendChild(periodDiv);
-          }
-          termDiv.appendChild(weekDiv);
+      ['T1', 'T2'].forEach(term => {
+        const col = document.getElementById(`col-${term}`);
+        for(let w = 1; w <= 25; w++) {
+          let det = document.createElement('details');
+          det.className = 'week-details';
+          det.innerHTML = `
+            <summary>Week ${w}</summary>
+            <div class="week-content" id="${term}-W${w}">
+               <button class="btn" style="background:#475569; width:auto; padding:8px 15px; margin-top:10px;" onclick="addPeriod('${term}', 'W${w}')">+ Add Period</button>
+            </div>
+          `;
+          col.appendChild(det);
         }
-        container.appendChild(termDiv);
       });
-      
       document.getElementById('generateBtn').style.display = 'block';
+    }
+
+    // Dynamic function to inject a new Period configuration block
+    function addPeriod(term, weekKey) {
+      const containerElement = document.getElementById(`${term}-${weekKey}`);
+      const periodCard = document.createElement('div');
+      periodCard.className = 'period-card';
+      
+      let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text.replace(/"/g, '&quot;')}">${o.text.substring(0,80)}...</option>`).join('');
+
+      periodCard.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #ddd; padding-bottom:10px;">
+           <strong style="color:var(--primary);">Configure Period</strong>
+           <button style="color:red; font-weight:bold; border:none; background:none; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">X Remove Period</button>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+           <div><label>Date</label><input type="date" class="p-date" /></div>
+           <div>
+             <label>Period</label>
+             <select class="p-num">
+                <option value="1">Period 1</option>
+                <option value="2">Period 2</option>
+                <option value="3">Period 3</option>
+                <option value="4">Period 4</option>
+                <option value="5">Period 5</option>
+                <option value="6">Period 6</option>
+             </select>
+           </div>
+           <div>
+             <label>Time</label>
+             <select class="p-time">
+                <option value="30">30 Mins</option>
+                <option value="35">35 Mins</option>
+                <option value="40">40 Mins</option>
+                <option value="45">45 Mins</option>
+             </select>
+           </div>
+        </div>
+        
+        <div>
+           <label>Add Outcome(s)</label>
+           <select style="width:100%; padding:8px; border:1px solid var(--primary);" onchange="selectOutcome(this)">
+              <option value="">-- Choose an Outcome --</option>
+              ${outcomeOptions}
+           </select>
+        </div>
+        <div class="selected-outcomes-container" style="margin-top:15px;"></div>
+      `;
+      
+      const btn = containerElement.querySelector('button');
+      containerElement.insertBefore(periodCard, btn);
+    }
+
+    // Extracts Outcome, creates a card, and shows checkable indicators
+    function selectOutcome(selectElement) {
+       const val = selectElement.value;
+       if(!val) return;
+       const outcome = globalOutcomes.find(o => o.text === val);
+       if(!outcome) return;
+       
+       const container = selectElement.parentElement.nextElementSibling;
+       const outCard = document.createElement('div');
+       outCard.className = 'outcome-block';
+       outCard.dataset.outcomeText = outcome.text;
+       outCard.dataset.strand = outcome.strand;
+       outCard.dataset.substrand = outcome.substrand;
+       
+       let indicatorsHtml = outcome.indicators.map(ind => `
+          <label class="indicator-label">
+             <input type="checkbox" class="ind-check" value="${ind.replace(/"/g, '&quot;')}" checked>
+             <span>${ind}</span>
+          </label>
+       `).join('');
+       
+       outCard.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:14px; font-weight:bold;">
+             <span style="color:#1e3a8a;">${outcome.text}</span>
+             <button style="color:red; background:none; border:none; cursor:pointer;" title="Remove Outcome" onclick="this.parentElement.parentElement.remove()">X</button>
+          </div>
+          <div style="margin-top:8px; padding-top:8px; border-top:1px dashed #94a3b8;">
+             <strong>Indicators:</strong>
+             ${indicatorsHtml}
+          </div>
+       `;
+       
+       container.appendChild(outCard);
+       selectElement.value = ""; 
     }
 
     async function generateDocument() {
@@ -298,42 +331,62 @@
       
       let lpData = { T1: {}, T2: {} };
       
-      document.querySelectorAll('.week-row').forEach(weekRow => {
-        let term = weekRow.dataset.term;
-        let week = weekRow.dataset.week;
-        lpData[term][week] = [];
+      // Parse the new dynamic layout
+      document.querySelectorAll('.week-content').forEach(weekContent => {
+        let [term, weekKey] = weekContent.id.split('-');
+        let periods = weekContent.querySelectorAll('.period-card');
         
-        weekRow.querySelectorAll('.period-row').forEach(periodRow => {
-          let dateVal = periodRow.querySelector('.period-date').value;
-          let outcomeText = periodRow.querySelector('.period-outcome').value;
-          
-          if(outcomeText) {
-            let matchedOutcome = globalOutcomes.find(o => o.text === outcomeText);
-            lpData[term][week].push({
-              dateString: dateVal,
-              outcome: outcomeText,
-              strand: matchedOutcome ? matchedOutcome.strand : "",
-              substrand: matchedOutcome ? matchedOutcome.substrand : "",
-              indicators: matchedOutcome ? matchedOutcome.indicators : []
+        if(periods.length > 0) {
+            periods.forEach(pCard => {
+                let dateVal = pCard.querySelector('.p-date').value;
+                let pNum = pCard.querySelector('.p-num').value;
+                let pTime = pCard.querySelector('.p-time').value;
+                
+                // Formats custom string to bypass backend hardcoding limitations safely
+                let finalDateStr = `${dateVal} | P${pNum} (${pTime}m)`;
+                if(!dateVal) finalDateStr = `P${pNum} (${pTime}m)`;
+                
+                let outcomeBlocks = pCard.querySelectorAll('.outcome-block');
+                if(outcomeBlocks.length > 0) {
+                    if(!lpData[term][weekKey]) lpData[term][weekKey] = [];
+                    
+                    let combinedOutcomes = [];
+                    let combinedIndicators = [];
+                    let cStrand = ""; let cSub = "";
+                    
+                    outcomeBlocks.forEach((ob, idx) => {
+                        combinedOutcomes.push(ob.dataset.outcomeText);
+                        if(idx === 0) {
+                            cStrand = ob.dataset.strand;
+                            cSub = ob.dataset.substrand;
+                        }
+                        ob.querySelectorAll('.ind-check:checked').forEach(chk => {
+                            combinedIndicators.push(chk.value);
+                        });
+                    });
+                    
+                    lpData[term][weekKey].push({
+                        dateString: finalDateStr,
+                        outcome: combinedOutcomes.join('\n\n'),
+                        strand: cStrand,
+                        substrand: cSub,
+                        indicators: combinedIndicators
+                    });
+                }
             });
-          }
-        });
+        }
       });
 
       const payload = { action: 'generateLP', year, subject, grade, format, lpData };
 
       try {
-        const response = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-        
+        const response = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify(payload) });
         const res = await response.json();
         document.getElementById('generateBtn').disabled = false;
         
         if (res.success) {
           setStatus("Success! Click here to open your Lesson Plan.", "success");
-          document.getElementById('status').innerHTML = `<a href="${res.url}" target="_blank" style="color: #16a34a; text-decoration: underline;">Open Document</a>`;
+          document.getElementById('status').innerHTML = `<a href="${res.url}" target="_blank" style="color: #16a34a; font-size:18px; text-decoration: underline;">Open Final Document</a>`;
         } else {
           setStatus("Error: " + res.error, "error");
         }
