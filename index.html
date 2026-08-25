@@ -128,7 +128,8 @@
         </select>
       </div>
       <div style="display: flex; align-items: end;">
-        <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Download</button>
+        <!-- Changed this button text to Load Data -->
+        <button class="btn" id="loadOutcomesBtn" onclick="loadData()">Load Data</button>
       </div>
     </div>
 
@@ -196,7 +197,7 @@
         if (res.success) {
           globalOutcomes = res.outcomes;
           buildUI();
-          setStatus("Data downloaded successfully. Please configure your weeks below.", "success");
+          setStatus("Data loaded successfully. Please configure your weeks below.", "success");
         } else {
           setStatus("Error: " + res.error, "error");
         }
