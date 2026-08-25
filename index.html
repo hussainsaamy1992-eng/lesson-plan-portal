@@ -75,6 +75,10 @@
     .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
     
     .export-panel { background: white; padding: 20px; border-radius: 8px; border: 2px solid #e5e7eb; margin-top: 20px; text-align: center; }
+    
+    .download-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 15px; }
+    .download-link { background: #16a34a; color: white; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; display: inline-block; }
+    .download-link:hover { background: #15803d; }
   </style>
 </head>
 <body>
@@ -164,9 +168,9 @@
 
   <script>
     // ==========================================
-    // DEPLOYED APP URL - UPDATED AGAIN
+    // DEPLOYED APP URL - UPDATED
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxm-BF4-StPo03GrGILIGqoQh3gax-s8gk1T-gGH3oUwoYOdglUcHfaGf73VETXc_fqmg/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbygfE6TKvU3H3qAIGeLEhNxDfN_gchBM3JoOU7BQZVlDZF9ktUIo9R6a_vGiU01lou_Sg/exec"; 
     
     let globalOutcomes = [];
 
@@ -365,7 +369,7 @@
          return;
       }
 
-      setStatus("Generating your document... Please wait.", "");
+      setStatus("Generating your document(s)... Please wait.", "");
       document.getElementById('generateBtn').disabled = true;
 
       const year = document.getElementById('year').value;
@@ -430,11 +434,18 @@
         const res = await response.json();
         document.getElementById('generateBtn').disabled = false;
         
-        if (res.success) {
-          setStatus("Success! Click here to open your Lesson Plan.", "success");
-          document.getElementById('status').innerHTML = `<a href="${res.url}" target="_blank" style="color: #16a34a; font-size:18px; text-decoration: underline;">Open Final Document</a>`;
+        if (res.success && res.files && res.files.length > 0) {
+          setStatus("Success! Download your files below:", "success");
+          
+          let downloadButtonsHtml = `<div class="download-grid">`;
+          res.files.forEach(f => {
+             downloadButtonsHtml += `<a href="${f.url}" target="_blank" class="download-link">📄 Download ${f.label}</a>`;
+          });
+          downloadButtonsHtml += `</div>`;
+          
+          document.getElementById('status').innerHTML = downloadButtonsHtml;
         } else {
-          setStatus("Error: " + res.error, "error");
+          setStatus("Error: " + (res.error || "No files were created."), "error");
         }
       } catch (err) {
         document.getElementById('generateBtn').disabled = false;
