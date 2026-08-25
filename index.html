@@ -66,12 +66,17 @@
     .term-col h2 { text-align: center; color: var(--primary); border-bottom: 2px solid #cbd5e1; padding-bottom: 10px; }
     
     .week-details { margin-bottom: 10px; background: white; border-radius: 6px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .week-details summary { padding: 12px; font-weight: bold; cursor: pointer; background: #f8fafc; border-radius: 6px; }
+    /* Updated summary for flex layout */
+    .week-details summary { display: flex; justify-content: space-between; align-items: center; padding: 12px; font-weight: bold; cursor: pointer; background: #f8fafc; border-radius: 6px; list-style: none; }
+    .week-details summary::-webkit-details-marker { display: none; }
     .week-content { padding: 15px; }
     
     .period-card { border: 1px dashed #94a3b8; padding: 15px; margin-bottom: 15px; border-radius: 6px; background: #fdfdfd; }
     .outcome-block { background: #eff6ff; padding: 10px; border-left: 4px solid #3b82f6; margin-bottom: 10px; border-radius: 4px; }
     .indicator-label { display: flex; align-items: start; gap: 8px; font-size: 13px; margin-top: 5px; cursor: pointer; }
+    
+    /* Export Panel Styling */
+    .export-panel { background: white; padding: 20px; border-radius: 8px; border: 2px solid #e5e7eb; margin-top: 20px; text-align: center; }
   </style>
 </head>
 <body>
@@ -133,9 +138,22 @@
 
     <div id="planner-container"></div>
 
-    <button class="btn" id="generateBtn" onclick="generateDocument()" style="display:none; padding: 15px; font-size: 16px; margin-top: 20px;">
-      Generate VILUFUSHEE SCHOOL Lesson Plan
-    </button>
+    <!-- New Export Panel -->
+    <div id="export-panel-container" class="export-panel" style="display:none;">
+      <h3 style="margin-top:0; color:var(--primary);">Export Options</h3>
+      <p style="font-size:14px; color:#555;">Choose which terms/weeks to include in the generated document:</p>
+      
+      <div style="margin-bottom: 20px;">
+        <button class="btn" style="width:auto; margin: 0 5px; background:#475569;" onclick="bulkSelect('T1')">Select All Term 1</button>
+        <button class="btn" style="width:auto; margin: 0 5px; background:#475569;" onclick="bulkSelect('T2')">Select All Term 2</button>
+        <button class="btn" style="width:auto; margin: 0 5px; background:#ef4444;" onclick="bulkSelect('NONE')">Deselect All</button>
+      </div>
+
+      <button class="btn" id="generateBtn" onclick="generateDocument()" style="padding: 15px; font-size: 16px;">
+        Generate VILUFUSHEE SCHOOL Lesson Plan
+      </button>
+    </div>
+    
   </div>
 
   <div id="view-sow" class="view-section">
@@ -219,8 +237,17 @@
         for(let w = 1; w <= 25; w++) {
           let det = document.createElement('details');
           det.className = 'week-details';
+          
+          // Added checkbox to the summary header
           det.innerHTML = `
-            <summary>Week ${w}</summary>
+            <summary>
+               <span style="display:flex; align-items:center;">
+                  <span style="margin-right:8px; font-size:10px;">▶</span> Week ${w}
+               </span>
+               <label style="margin:0; font-size:13px; font-weight:normal;" onclick="event.stopPropagation()">
+                  <input type="checkbox" class="week-select-cb" data-term="${term}" data-week="W${w}"> Include in Export
+               </label>
+            </summary>
             <div class="week-content" id="${term}-W${w}">
                <div class="periods-list"></div>
                <button class="btn" style="background:#475569; width:auto; padding:8px 15px; margin-top:10px;" onclick="addPeriod('${term}', 'W${w}')">+ Add Period</button>
@@ -229,7 +256,22 @@
           col.appendChild(det);
         }
       });
-      document.getElementById('generateBtn').style.display = 'block';
+      // Show the export panel at the bottom
+      document.getElementById('export-panel-container').style.display = 'block';
+    }
+
+    // Bulk selection logic for the buttons at the bottom
+    function bulkSelect(action) {
+       const checkboxes = document.querySelectorAll('.week-select-cb');
+       checkboxes.forEach(cb => {
+          if (action === 'T1') {
+             cb.checked = (cb.dataset.term === 'T1');
+          } else if (action === 'T2') {
+             cb.checked = (cb.dataset.term === 'T2');
+          } else if (action === 'NONE') {
+             cb.checked = false;
+          }
+       });
     }
 
     function renumberPeriods(containerId) {
@@ -249,6 +291,10 @@
       
       let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text.replace(/"/g, '&quot;')}">${o.text.substring(0,80)}...</option>`).join('');
 
+      // Auto-checks the week when a period is added
+      const weekCheckbox = weekContainer.parentElement.querySelector('.week-select-cb');
+      if(weekCheckbox) weekCheckbox.checked = true;
+
       periodCard.innerHTML = `
         <div style="display:flex; justify-content:space-between; margin-bottom:15px; border-bottom: 1px solid #ddd; padding-bottom:10px;">
            <strong style="color:var(--primary);" class="period-title">Period</strong>
@@ -261,7 +307,6 @@
              <label>Time</label>
              <select class="p-time">
                 <option value="30">30 Mins</option>
-                <!-- Added "selected" to default to 35 Mins -->
                 <option value="35" selected>35 Mins</option>
                 <option value="40">40 Mins</option>
                 <option value="45">45 Mins</option>
@@ -319,6 +364,13 @@
     }
 
     async function generateDocument() {
+      // Check if at least one week is selected
+      const checkedBoxes = document.querySelectorAll('.week-select-cb:checked');
+      if(checkedBoxes.length === 0) {
+         alert("Please select at least one week to export by checking the 'Include in Export' boxes.");
+         return;
+      }
+
       setStatus("Generating your document... Please wait.", "");
       document.getElementById('generateBtn').disabled = true;
 
@@ -330,6 +382,10 @@
       let lpData = { T1: {}, T2: {} };
       
       document.querySelectorAll('.week-content').forEach(weekContent => {
+        // ONLY process this week if its checkbox is checked
+        const isSelected = weekContent.parentElement.querySelector('.week-select-cb').checked;
+        if (!isSelected) return;
+
         let [term, weekKey] = weekContent.id.split('-');
         let periods = weekContent.querySelectorAll('.period-card');
         
