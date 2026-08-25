@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <base target="_top">
+  <meta charset="UTF-8">
   <title>Nooraanee School - Lesson Plan Portal</title>
   <style>
     :root {
-      --primary: #1e3a8a; /* Deep blue for school branding */
+      --primary: #1e3a8a;
       --secondary: #f3f4f6;
       --text: #1f2937;
     }
@@ -53,7 +53,6 @@
     .btn:hover { opacity: 0.9; }
     .btn:disabled { background: #9ca3af; cursor: not-allowed; }
     
-    /* Week and Period Rows */
     .term-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
     .term-section h2 { margin-top: 0; color: var(--primary); border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
     
@@ -110,9 +109,7 @@
     </div>
   </div>
 
-  <div id="planner-container">
-    <!-- Dynamic Term/Week/Period Rows will be injected here -->
-  </div>
+  <div id="planner-container"></div>
 
   <button class="btn" id="generateBtn" onclick="generateDocument()" style="display:none; padding: 15px; font-size: 16px;">
     Generate Nooraanee School Lesson Plan
@@ -121,6 +118,11 @@
   <div id="status"></div>
 
   <script>
+    // ==========================================
+    // DEPLOYED APP URL
+    // ==========================================
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxgnE02fokED_0iuJL0Fk5lgfaCx9uS6moGDJL3Y0W9ZowyLhtAsR7T3SdAh_MJdsx3Zg/exec"; 
+    
     let globalOutcomes = [];
 
     function setStatus(msg, type = '') {
@@ -129,16 +131,19 @@
       el.className = type;
     }
 
-    function loadData() {
+    async function loadData() {
       setStatus("Loading curriculum data from sheets...", "");
       document.getElementById('loadOutcomesBtn').disabled = true;
       
       const subject = document.getElementById('subject').value;
       const grade = document.getElementById('grade').value;
 
-      google.script.run.withSuccessHandler(function(response) {
+      try {
+        const response = await fetch(`${WEB_APP_URL}?action=getOutcomes&subject=${subject}&grade=${grade}`);
+        const res = await response.json();
+        
         document.getElementById('loadOutcomesBtn').disabled = false;
-        let res = JSON.parse(response);
+        
         if (res.success) {
           globalOutcomes = res.outcomes;
           buildUI();
@@ -146,14 +151,16 @@
         } else {
           setStatus("Error: " + res.error, "error");
         }
-      }).doGet({ action: 'getOutcomes', subject: subject, grade: grade });
+      } catch (err) {
+        document.getElementById('loadOutcomesBtn').disabled = false;
+        setStatus("Network Error: Make sure your Web App URL is correct and deployed for 'Anyone'.", "error");
+      }
     }
 
     function buildUI() {
       const container = document.getElementById('planner-container');
       container.innerHTML = ''; 
       
-      // Generating a sample structure for Term 1, Week 1 (You can expand this loop natively)
       const terms = ['T1']; 
       
       terms.forEach(term => {
@@ -161,16 +168,13 @@
         termDiv.className = 'term-section';
         termDiv.innerHTML = `<h2>${term === 'T1' ? 'Term 1' : 'Term 2'}</h2>`;
         
-        // Render 2 weeks for demo purposes
         for(let w = 1; w <= 2; w++) {
           let weekDiv = document.createElement('div');
           weekDiv.className = 'week-row';
           weekDiv.dataset.term = term;
           weekDiv.dataset.week = 'W' + w;
-          
           weekDiv.innerHTML = `<div class="week-title">Week ${w}</div>`;
           
-          // Render 2 periods per week for demo
           for(let p = 1; p <= 2; p++) {
             let periodDiv = document.createElement('div');
             periodDiv.className = 'period-row';
@@ -178,17 +182,8 @@
             let outcomeOptions = globalOutcomes.map(o => `<option value="${o.text}">${o.text.substring(0,40)}...</option>`).join('');
             
             periodDiv.innerHTML = `
-              <div>
-                <label>Period ${p} Date</label>
-                <input type="date" class="period-date" />
-              </div>
-              <div>
-                <label>Outcome</label>
-                <select class="period-outcome">
-                  <option value="">Select Outcome...</option>
-                  ${outcomeOptions}
-                </select>
-              </div>
+              <div><label>Period ${p} Date</label><input type="date" class="period-date" /></div>
+              <div><label>Outcome</label><select class="period-outcome"><option value="">Select Outcome...</option>${outcomeOptions}</select></div>
             `;
             weekDiv.appendChild(periodDiv);
           }
@@ -200,7 +195,7 @@
       document.getElementById('generateBtn').style.display = 'block';
     }
 
-    function generateDocument() {
+    async function generateDocument() {
       setStatus("Generating your document... Please wait.", "");
       document.getElementById('generateBtn').disabled = true;
 
@@ -211,7 +206,6 @@
       
       let lpData = { T1: {}, T2: {} };
       
-      // Parse the UI to match the Code.gs expected JSON structure
       document.querySelectorAll('.week-row').forEach(weekRow => {
         let term = weekRow.dataset.term;
         let week = weekRow.dataset.week;
@@ -234,25 +228,27 @@
         });
       });
 
-      const payload = {
-        action: 'generateLP',
-        year: year,
-        subject: subject,
-        grade: grade,
-        format: format,
-        lpData: lpData
-      };
+      const payload = { action: 'generateLP', year, subject, grade, format, lpData };
 
-      google.script.run.withSuccessHandler(function(response) {
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        
+        const res = await response.json();
         document.getElementById('generateBtn').disabled = false;
-        let res = JSON.parse(response);
+        
         if (res.success) {
           setStatus("Success! Click here to open your Lesson Plan.", "success");
           document.getElementById('status').innerHTML = `<a href="${res.url}" target="_blank" style="color: #16a34a; text-decoration: underline;">Open Document</a>`;
         } else {
           setStatus("Error: " + res.error, "error");
         }
-      }).doPost({ postData: { contents: JSON.stringify(payload) } });
+      } catch (err) {
+        document.getElementById('generateBtn').disabled = false;
+        setStatus("Network Error: Failed to connect to the backend.", "error");
+      }
     }
   </script>
 </body>
