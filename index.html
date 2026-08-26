@@ -170,7 +170,7 @@
     // ==========================================
     // DEPLOYED APP URL
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzCKU0nvu0SLpCCBm4zRyDytqVJ4v3_lQhTYle0E4UzrIww4yPdo9uPcQJDZXLp2dNFOA/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwjR-nKFwKyck-Xu9X0pfUo0y0txZG5bYMQH5A3fGFOxR7JfJ4q_uZtFF85F8Uax5Ei7Q/exec"; 
     
     let globalOutcomes = [];
 
@@ -200,7 +200,6 @@
       el.textContent = msg; el.className = type;
     }
 
-    // Clears planner state completely
     function resetPlannerUI() {
       globalOutcomes = [];
       document.getElementById('planner-container').innerHTML = "";
@@ -208,7 +207,7 @@
     }
 
     async function loadData() {
-      resetPlannerUI(); // Erase old outcomes state
+      resetPlannerUI(); 
       
       setStatus("Downloading curriculum data...", "");
       document.getElementById('loadOutcomesBtn').disabled = true;
