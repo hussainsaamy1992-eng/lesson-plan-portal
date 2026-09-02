@@ -342,6 +342,12 @@
         </div>
         <div class="selected-outcomes-container" style="margin-top:15px;"></div>
 
+        <!-- TEACHING AIDS FIELD -->
+        <div style="margin-top: 15px;">
+           <label style="color:var(--primary); margin-bottom:4px; font-weight:bold;">Teaching Aids (Dhivehi / English)</label>
+           <textarea class="p-teaching-aids" rows="2" placeholder="e.g. ވައިޓްބޯޑު، މަސައްކަތު ކަރުދާސް، ޕްރެޒެންޓޭޝަން..."></textarea>
+        </div>
+
         <!-- GEMINI AI FIELDS (LI, SC & ACTIVITY) -->
         <div class="activity-box">
            <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Learning Intention (Dhivehi)</label>
@@ -486,6 +492,7 @@
             periods.forEach((pCard, index) => {
                 let dateVal = pCard.querySelector('.p-date').value;
                 let pTime = pCard.querySelector('.p-time').value;
+                let teachingAidsVal = pCard.querySelector('.p-teaching-aids') ? pCard.querySelector('.p-teaching-aids').value : "";
                 let customLiVal = pCard.querySelector('.p-li') ? pCard.querySelector('.p-li').value : "";
                 let customScVal = pCard.querySelector('.p-sc') ? pCard.querySelector('.p-sc').value : "";
                 let customActVal = pCard.querySelector('.p-activity') ? pCard.querySelector('.p-activity').value : "";
@@ -520,9 +527,10 @@
                         strand: cStrand,
                         substrand: cSub,
                         indicators: combinedIndicators,
-                        customLI: customLiVal,       // Sends LI box value to Code.gs
-                        customSC: customScVal,       // Sends SC box value to Code.gs
-                        customActivity: customActVal // Sends Activity box value to Code.gs
+                        teachingAids: teachingAidsVal, // Sends Teaching Aids value to Code.gs
+                        customLI: customLiVal,         // Sends LI box value to Code.gs
+                        customSC: customScVal,         // Sends SC box value to Code.gs
+                        customActivity: customActVal   // Sends Activity box value to Code.gs
                     });
                 }
             });
