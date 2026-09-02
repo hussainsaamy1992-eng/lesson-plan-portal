@@ -57,7 +57,7 @@
 
     .btn-ai {
       background: linear-gradient(135deg, #7c3aed, #2563eb);
-      color: white; border: none; padding: 8px 14px; border-radius: 6px;
+      color: white; border: none; padding: 10px 16px; border-radius: 6px;
       cursor: pointer; font-weight: bold; font-size: 13px; margin-top: 8px;
     }
     .btn-ai:hover { opacity: 0.9; }
@@ -184,7 +184,7 @@
     // ==========================================
     // DEPLOYED APP URL
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxqap4YxTA1QmhpVGyQMgp5fn2N9yqF-H2ET8XdDhYlRb4ksMzBTfjoWK0danVkS4qdBA/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwpIWL1pAgsJARxDaDR2WbFNhbY0ye-Brr_sdpvbkKbiWcs7KGWjgfVq2FukNNNAiS-Q/exec"; 
     
     let globalOutcomes = [];
 
@@ -342,12 +342,19 @@
         </div>
         <div class="selected-outcomes-container" style="margin-top:15px;"></div>
 
-        <!-- ACTIVITY BOX WITH GEMINI AI -->
+        <!-- GEMINI AI FIELDS (LI, SC & ACTIVITY) -->
         <div class="activity-box">
-           <label style="color:#15803d; margin-bottom:4px;">Classroom Activity (Dhivehi)</label>
-           <textarea class="p-activity" rows="2" placeholder="AI activity will appear here or type your own..."></textarea>
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Learning Intention (Dhivehi)</label>
+           <textarea class="p-li" rows="2" placeholder="AI Learning Intention will appear here..." style="width:100%; font-family:'Faruma', 'Thaana', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Success Criteria (Dhivehi)</label>
+           <textarea class="p-sc" rows="2" placeholder="AI Success Criteria will appear here..." style="width:100%; font-family:'Faruma', 'Thaana', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
+           <label style="color:#15803d; margin-bottom:4px; font-weight:bold; display:block;">Classroom Activity (Dhivehi)</label>
+           <textarea class="p-activity" rows="2" placeholder="AI activity will appear here or type your own..." style="width:100%; font-family:'Faruma', 'Thaana', sans-serif; direction:rtl; text-align:right; margin-bottom:10px;"></textarea>
+
            <button type="button" class="btn-ai" onclick="generateAIActivityForPeriod(this)">
-             ✨ Generate Activity with Gemini AI
+             ✨ Generate AI Details (LI, SC & Activity)
            </button>
         </div>
       `;
@@ -393,14 +400,16 @@
        selectElement.value = ""; 
     }
 
-    // FUNCTION TO TRIGGER GEMINI AI FOR A PERIOD CARD
+    // FUNCTION TO TRIGGER GEMINI AI FOR A PERIOD CARD (LI, SC, & ACTIVITY)
     async function generateAIActivityForPeriod(btn) {
       const card = btn.closest('.period-card');
       const outcomeBlocks = card.querySelectorAll('.outcome-block');
-      const textarea = card.querySelector('.p-activity');
+      const liTextarea = card.querySelector('.p-li');
+      const scTextarea = card.querySelector('.p-sc');
+      const actTextarea = card.querySelector('.p-activity');
 
       if (outcomeBlocks.length === 0) {
-        alert("Please select at least one Outcome before generating an AI activity.");
+        alert("Please select at least one Outcome before generating AI details.");
         return;
       }
 
@@ -418,7 +427,7 @@
       const grade = document.getElementById('grade').value;
 
       btn.disabled = true;
-      btn.innerText = "⏳ Generating AI Activity...";
+      btn.innerText = "⏳ Generating AI Details...";
 
       try {
         const payload = {
@@ -433,17 +442,19 @@
         const res = await response.json();
 
         btn.disabled = false;
-        btn.innerText = "✨ Generate Activity with Gemini AI";
+        btn.innerText = "✨ Generate AI Details (LI, SC & Activity)";
 
-        if (res.success && res.activity) {
-          textarea.value = res.activity;
+        if (res.success) {
+          if (liTextarea && res.learningIntention) liTextarea.value = res.learningIntention;
+          if (scTextarea && res.successCriteria) scTextarea.value = res.successCriteria;
+          if (actTextarea && res.activity) actTextarea.value = res.activity;
         } else {
-          alert("Error: " + (res.error || "Could not generate activity. Ensure your Gemini API Key is set in Code.gs."));
+          alert("Error: " + (res.error || "Could not generate AI content. Ensure your Gemini API Key is set in Code.gs."));
         }
       } catch (err) {
         btn.disabled = false;
-        btn.innerText = "✨ Generate Activity with Gemini AI";
-        alert("Network Error: Failed to generate activity.");
+        btn.innerText = "✨ Generate AI Details (LI, SC & Activity)";
+        alert("Network Error: Failed to generate AI content.");
       }
     }
 
@@ -475,7 +486,9 @@
             periods.forEach((pCard, index) => {
                 let dateVal = pCard.querySelector('.p-date').value;
                 let pTime = pCard.querySelector('.p-time').value;
-                let customAct = pCard.querySelector('.p-activity').value;
+                let customLiVal = pCard.querySelector('.p-li') ? pCard.querySelector('.p-li').value : "";
+                let customScVal = pCard.querySelector('.p-sc') ? pCard.querySelector('.p-sc').value : "";
+                let customActVal = pCard.querySelector('.p-activity') ? pCard.querySelector('.p-activity').value : "";
                 let pNum = (index + 1).toString(); 
                 
                 let outcomeBlocks = pCard.querySelectorAll('.outcome-block');
@@ -507,7 +520,9 @@
                         strand: cStrand,
                         substrand: cSub,
                         indicators: combinedIndicators,
-                        customActivity: customAct // This sends the box value to Code.gs
+                        customLI: customLiVal,       // Sends LI box value to Code.gs
+                        customSC: customScVal,       // Sends SC box value to Code.gs
+                        customActivity: customActVal // Sends Activity box value to Code.gs
                     });
                 }
             });
