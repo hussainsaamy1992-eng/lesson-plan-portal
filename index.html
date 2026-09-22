@@ -184,7 +184,7 @@
     // ==========================================
     // DEPLOYED APP URL
     // ==========================================
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby1MRb5zCDdKWLmbU4aH3-TIOUd6FIpVTtwrXSfkG0b-L0FsufKB3XWNf6APPM1Cel-AQ/exec"; 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw67oOUASH6YHh67p-fUDUt8zkQc5QAj18PTT2R3UkEdV1p6KkvZy6ta_lBz_qR5YNDSw/exec"; 
     
     let globalOutcomes = [];
 
@@ -229,7 +229,7 @@
       const grade = document.getElementById('grade').value;
 
       try {
-        const response = await fetch(`${WEB_APP_URL}?action=getOutcomes&subject=${subject}&grade=${grade}`);
+        const response = await fetch(`${WEB_APP_URL}?action=getOutcomes&subject=${encodeURIComponent(subject)}&grade=${encodeURIComponent(grade)}`);
         const res = await response.json();
         document.getElementById('loadOutcomesBtn').disabled = false;
         
@@ -242,7 +242,7 @@
         }
       } catch (err) {
         document.getElementById('loadOutcomesBtn').disabled = false;
-        setStatus("Network Error: Make sure your Web App URL is correct.", "error");
+        setStatus("Network Error: Make sure your Web App deployment access is set to 'Anyone'.", "error");
       }
     }
 
@@ -527,10 +527,10 @@
                         strand: cStrand,
                         substrand: cSub,
                         indicators: combinedIndicators,
-                        teachingAids: teachingAidsVal, // Sends Teaching Aids value to Code.gs
-                        customLI: customLiVal,         // Sends LI box value to Code.gs
-                        customSC: customScVal,         // Sends SC box value to Code.gs
-                        customActivity: customActVal   // Sends Activity box value to Code.gs
+                        teachingAids: teachingAidsVal,
+                        customLI: customLiVal,
+                        customSC: customScVal,
+                        customActivity: customActVal
                     });
                 }
             });
